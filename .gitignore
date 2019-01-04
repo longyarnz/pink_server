@@ -1,0 +1,11 @@
+# Folders
+node_modules/
+coverage/*
+.vscode/
+server/
+pinketu-master/
+
+# Files
+*.zip
+*.log
+.env
