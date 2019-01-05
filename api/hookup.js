@@ -72,8 +72,8 @@ router.post('/', tokenParser, async (req, res) => {
  */
 router.put('/:hookupId', tokenParser, async (req, res) => {
   try {
-    const { params: { hookupId } } = req;
-    const hookup = await setHookupAsComplete(hookupId);
+    const { params: { hookupId }, userId: user } = req;
+    const hookup = await setHookupAsComplete(user, hookupId);
     res.status(200).json({ message: hookup });
   }
   catch (err) {
@@ -88,12 +88,13 @@ router.put('/:hookupId', tokenParser, async (req, res) => {
  */
 router.delete('/:hookupId', tokenParser, async (req, res) => {
   try {
-    const { params: { hookupId } } = req;
-    const removed = await deleteHookupById(hookupId);
-    res.status(200).json(removed);
+    // const { params: { hookupId } } = req;
+    // const removed = await deleteHookupById(hookupId);
+    res.status(200).json('Service not available');
   }
   catch (err) {
-    logger.error(err); res.status(400).json('NetworkError: Unable to delete user hookup');
+    logger.error(err); 
+    res.status(400).json('NetworkError: Unable to delete user hookup');
   }
 });
 

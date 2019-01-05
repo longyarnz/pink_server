@@ -39,9 +39,9 @@ const getAUserHookup = async (userId, hookupId) => {
   }
 };
 
-const setHookupAsComplete = async (hookupId) => {
+const setHookupAsComplete = async (user, hookupId) => {
   try {
-    const hookup = await HookupModel.findOneAndUpdate({ _id: hookupId }, { completed: true }, { new: true });
+    const hookup = await HookupModel.findOneAndUpdate({ _id: hookupId, client: user }, { completed: true }, { new: true });
     return hookup.completed ? 'Hookup is completed' : 'Unable to complete hookup';
   }
   catch (err) {
