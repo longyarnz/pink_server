@@ -68,7 +68,7 @@ router.post('/', tokenParser, async (req, res) => {
 /**
  * @description Updates the state of a hookup
  * @param {middleware} tokenParser - Extracts userId from token
- * @returns {object} A boolean
+ * @returns {Response} JSON
  */
 router.put('/:hookupId', tokenParser, async (req, res) => {
   try {
