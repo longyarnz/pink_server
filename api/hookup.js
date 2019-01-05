@@ -74,7 +74,7 @@ router.put('/:hookupId', tokenParser, async (req, res) => {
   try {
     const { params: { hookupId } } = req;
     const hookup = await setHookupAsComplete(hookupId);
-    res.status(200).json(hookup);
+    res.status(200).json({ message: hookup });
   }
   catch (err) {
     logger.error(err); 

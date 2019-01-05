@@ -27,7 +27,7 @@ const getAHookupWhere = async (query) => {
 const setHookupAsComplete = async (hookupId) => {
   try {
     const hookup = await HookupModel.findOneAndUpdate({ _id: hookupId }, { completed: true }, { new: true });
-    return hookup.completed;
+    return hookup.completed ? 'Hookup is completed' : 'Unable to complete hookup';
   }
   catch (err) {
     throw err;
