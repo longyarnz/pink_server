@@ -29,13 +29,32 @@ router.get('/', tokenParser, async (req, res) => {
 });
 
 /**
+ * @description Gets a user transaction
+ * @param {middleware} tokenParser - Extracts userId from token
+ * @returns {Response} JSON
+ */
+router.get('/:transactionId', tokenParser, async (req, res) => {
+  try {
+    const { params: { transactionId }, userId } = req;
+    const transactions = await getUserTransactions(userId);
+    const query = transactions.find(({ _id }) => _id.toString() === transactionId);
+    const transaction = query !== undefined ? query : { message: 'Hookup not found' };
+    res.status(200).json(transaction);
+  }
+  catch (err) {
+    logger.error(err); 
+    res.status(400).json('NetworkError: Unable to get user transaction');
+  }
+});
+
+/**
  * @description Creates a single transaction
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {object} A newly created transaction object
  */
 router.post('/', validateTransactionInput, tokenParser, async (req, res) => {
   try {
-    const { body: { amount, hookup }, userId: { user } } = req;
+    const { body: { amount, hookup }, userId: user } = req;
     const transaction = await createTransaction(amount, user, hookup);
     res.status(200).json(transaction);
   }
