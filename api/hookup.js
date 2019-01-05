@@ -6,7 +6,7 @@ import express from 'express';
 import tokenParser from '../middleware/tokenParser';
 import logger from '../middleware/logger';
 import {
-  createHookup, getAHookupWhere, getAUserHookup, setHookupAsComplete, deleteHookupById
+  createHookup, getAHookupWhere, getAUserHookup, setHookupAsComplete
 } from '../service/hookupService';
 const router = express.Router();
 
