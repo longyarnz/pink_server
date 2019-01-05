@@ -8,6 +8,7 @@ import JWT from 'jsonwebtoken';
 import UUID from 'uuid';
 import { authenticateUser, createUser } from '../service/userService';
 import validateInput from '../middleware/validateInput';
+import validateLoginInput from '../middleware/validateLoginInput';
 import tokenParser from '../middleware/tokenParser';
 import logger from '../middleware/logger';
 
@@ -49,7 +50,7 @@ router.post('/signup', validateInput, async (req, res) => {
  * @param {middleware} validateInput - Callback for post method to routes
  * @returns {Response} JSON
  */
-router.post('/login', validateInput, async (req, res) => {
+router.post('/login', validateLoginInput, async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -97,7 +98,7 @@ router.post('/login', validateInput, async (req, res) => {
 router.get('/logout', tokenParser, (req, res) => {
   SERVER_KEY = UUID.v4();
   res.header['authorization'] = '';
-  res.status(200).json(true);
+  res.status(200).json({ message: 'User logged out' });
 });
 
 export { SERVER_KEY };

@@ -40,7 +40,7 @@ const createUser = async (credentials) => {
     const status = await checkIfUserExists({ email });
     if(status) throw('User Already Exists');
     password = await bcrypt.hashSync(password, HASH);
-    const user = await UserModel.create({ email, password, username, worker, image });
+    const user = await UserModel.create({ email, password, username, worker, images: [ image ] });
     return typeof user === 'object' ? { isCreated: true, id: user._id } : { isCreated: false, id: null };
   }
   catch (err) {

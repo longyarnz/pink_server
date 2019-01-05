@@ -6,12 +6,12 @@ export default (req, res, next) => {
   /**
    * @description Destructures and extracts email and password from Request object
    */
-  const { email, password, username, worker, image } = req.body;
+  const { email, password } = req.body;
 
   /**
    * @description Tests for data input
    */
-  if (!email || !password || worker === null || !username || !image) {
+  if (!email || !password) {
     res.status(401).json({ message: 'Invalid Inputs' });
   }
 

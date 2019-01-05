@@ -53,10 +53,10 @@ router.get('/:hookupId', tokenParser, async (req, res) => {
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {object} A newly created hookup object
  */
-router.post('/:workerId/:clientId/:randomKey', tokenParser, async (req, res) => {
+router.post('/', tokenParser, async (req, res) => {
   try {
-    const { params: { workerId, clientId, randomKey } } = req;
-    const hookup = await createHookup(workerId, clientId, randomKey);
+    const { body: { worker, client, randomKey } } = req;
+    const hookup = await createHookup(worker, client, randomKey);
     res.status(200).json(hookup);
   }
   catch (err) {
