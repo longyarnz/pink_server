@@ -35,10 +35,10 @@ const getUserTransactions = async (user) => {
 };
 
 
-const setTransactionAsComplete = async (transactionId) => {
+const setTransactionSuccess = async (user, transactionId) => {
   try {
-    const transaction = await TransactionModel.findOneAndUpdate({ _id: transactionId }, { success: true }, { new: true });
-    return transaction.completed;
+    const transaction = await TransactionModel.findOneAndUpdate({ _id: transactionId, user }, { success: true }, { new: true });
+    return transaction && transaction.success ? 'Transaction is successful' : 'Transaction/User is incorrect';
   }
   catch (err) {
     throw err;
@@ -55,4 +55,4 @@ const deleteTransactionById = async (transactionId) => {
   }
 };
 
-export { createTransaction, getATransactionWhere, getUserTransactions, setTransactionAsComplete, deleteTransactionById };
+export { createTransaction, getATransactionWhere, getUserTransactions, setTransactionSuccess, deleteTransactionById };

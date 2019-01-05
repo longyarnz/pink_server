@@ -7,7 +7,7 @@ import logger from '../middleware/logger';
 import tokenParser from '../middleware/tokenParser';
 import validateTransactionInput from '../middleware/validateTransactionInput';
 import {
-  getUserTransactions, createTransaction, deleteTransactionById, setTransactionAsComplete, getATransactionWhere
+  getUserTransactions, createTransaction, deleteTransactionById, setTransactionSuccess, getATransactionWhere
 } from '../service/transactionService';
 const router = express.Router();
 
@@ -71,8 +71,8 @@ router.post('/', validateTransactionInput, tokenParser, async (req, res) => {
  */
 router.put('/:transactionId', tokenParser, async (req, res) => {
   try {
-    const { params: { transactionId } } = req;
-    const transaction = await setTransactionAsComplete(transactionId);
+    const { params: { transactionId }, userId: user } = req;
+    const transaction = await setTransactionSuccess(user, transactionId);
     res.status(200).json(transaction);
   }
   catch (err) {
