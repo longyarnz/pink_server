@@ -1,6 +1,6 @@
 /**
  * @fileoverview Methods for querying data from the hookups collection.
- * @exports { createHookup, getAHookupWhere, deleteHookupById }
+ * @exports { createHookup, getAHookupWhere, getAUserHookup, setHookupAsComplete, deleteHookupById }
  */
 import HookupModel from '../models/hookup';
 
@@ -18,6 +18,21 @@ const getAHookupWhere = async (query) => {
   try {
     const hookup = await HookupModel.findOne(query);
     return hookup;
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
+const getAUserHookup = async (userId, hookupId) => {
+  try {
+    const hookups = await HookupModel.find({
+      $or: [
+        { worker: userId }, { client: userId }
+      ]
+    });
+    const hookup = hookups.find(({ _id }) => _id.toString() === hookupId);
+    return hookup !== undefined ? hookup : { message: 'Hookup not found' };
   }
   catch (err) {
     throw err;
@@ -44,4 +59,4 @@ const deleteHookupById = async (hookupId) => {
   }
 };
 
-export { createHookup, getAHookupWhere, setHookupAsComplete, deleteHookupById };
+export { createHookup, getAHookupWhere, getAUserHookup, setHookupAsComplete, deleteHookupById };

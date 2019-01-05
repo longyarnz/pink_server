@@ -6,7 +6,7 @@ import express from 'express';
 import tokenParser from '../middleware/tokenParser';
 import logger from '../middleware/logger';
 import {
-  createHookup, getAHookupWhere, setHookupAsComplete, deleteHookupById
+  createHookup, getAHookupWhere, getAUserHookup, setHookupAsComplete, deleteHookupById
 } from '../service/hookupService';
 const router = express.Router();
 
@@ -38,8 +38,8 @@ router.get('/', tokenParser, async (req, res) => {
  */
 router.get('/:hookupId', tokenParser, async (req, res) => {
   try {
-    const { params: { hookupId } } = req;
-    const hookup = await getAHookupWhere({ _id: hookupId });
+    const { params: { hookupId }, userId } = req;
+    const hookup = await getAUserHookup(userId, hookupId);
     res.status(200).json(hookup);
   }
   catch (err) {
