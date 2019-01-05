@@ -105,8 +105,8 @@ router.get('/:transactionId', tokenParser, async (req, res) => {
  */
 router.delete('/:transactionId', tokenParser, async (req, res) => {
   try {
-    const { params: { transactionId } } = req;
-    const removed = await deleteTransactionById(transactionId);
+    const { params: { transactionId }, userId: user } = req;
+    const removed = await deleteTransactionById(user, transactionId);
     res.status(200).json(removed);
   }
   catch (err) {

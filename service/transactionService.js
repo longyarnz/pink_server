@@ -45,10 +45,10 @@ const setTransactionSuccess = async (user, transactionId) => {
   }
 };
 
-const deleteTransactionById = async (transactionId) => {
+const deleteTransactionById = async (user, transactionId) => {
   try {
-    const remove = await TransactionModel.deleteOne({ _id: transactionId });
-    return remove.ok === 1;
+    const remove = await TransactionModel.deleteOne({ _id: transactionId, user });
+    return remove && remove.ok === 1 ? 'Transaction Deleted' : 'Transaction/User is incorrect';
   }
   catch (err) {
     throw err;
