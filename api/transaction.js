@@ -5,6 +5,7 @@
 import express from 'express';
 import logger from '../middleware/logger';
 import tokenParser from '../middleware/tokenParser';
+import validateTransactionInput from '../middleware/validateTransactionInput';
 import {
   getUserTransactions, createTransaction, deleteTransactionById, setTransactionAsComplete, getATransactionWhere
 } from '../service/transactionService';
@@ -32,7 +33,7 @@ router.get('/', tokenParser, async (req, res) => {
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {object} A newly created transaction object
  */
-router.post('/', tokenParser, async (req, res) => {
+router.post('/', validateTransactionInput, tokenParser, async (req, res) => {
   try {
     const { body: { amount, hookup }, userId: { user } } = req;
     const transaction = await createTransaction(amount, user, hookup);
