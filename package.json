@@ -1,7 +1,7 @@
 {
   "name": "pink_et_tu",
   "version": "1.0.0",
-  "description": "A simple Node Wallet API service",
+  "description": "Backend service for a hookup app!",
   "author": "Ayodele Olalekan <longyarnz@gmail.com>",
   "main": "app.js",
   "license": "MIT",

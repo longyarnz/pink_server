@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "name": "pink_et_tu",
+  "alias": "api.pinkettu.com.ng",
+  "env": {
+    "PORT": "3001",
+    "HOST": "0.0.0.0",
+    "MONGODB": "@prod-db",
+    "HASH": "10",
+    "SERVER_KEY": "function(UUID){return '641116d9-02db-4b03-a60e-4052d24906eb'}"
+  },
+  "builds": [
+    {
+      "src": "app.js",
+      "use": "@now/node-server"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app.js"
+    }
+  ]
+}
