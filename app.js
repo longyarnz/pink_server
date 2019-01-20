@@ -50,7 +50,7 @@ app.get('/', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
   const response = JSON.stringify({
     status: 200,
-    message: 'Server Status - OK',
+    message: 'Pink et Tu server is online',
   });
   res.send(response);
 });
