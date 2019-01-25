@@ -6,6 +6,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import Auth from './api/auth';
+import Mail from './api/mail';
 import Hookup from './api/hookup';
 import Transaction from './api/transaction';
 
@@ -40,6 +41,7 @@ app.use(express.static('build'));
  * @description Create server Routes
  */
 app.use('/auth', Auth);
+app.use('/mail', Mail);
 app.use('/hookup', Hookup);
 app.use('/transaction', Transaction);
 
