@@ -20,6 +20,8 @@ const PORT = process.env.PORT;
  */
 const HOST = process.env.HOST;
 
+const PROTOCOL = process.env.HOST === '0.0.0.0' ? 'https' : 'http';
+
 /**
  * @description Creates an express application
  * @constant {object}
@@ -35,7 +37,6 @@ app.use(cors());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static('build'));
 
 /**
  * @description Create server Routes
@@ -61,6 +62,6 @@ app.get('/', function (req, res) {
  * @description Let express application listen on dedicated PORT
  */
 // eslint-disable-next-line
-app.listen(PORT, HOST, () => console.log(`Server listening on http://${HOST}:${PORT}`));
+app.listen(PORT, HOST, () => console.log(`Server listening on ${PROTOCOL}://${HOST}:${PORT}`));
 
 export default app;

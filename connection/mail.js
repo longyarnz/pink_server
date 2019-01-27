@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
   host: 'twentyfour.qservers.net',
+  port: 587,
   secure: false,
   auth: {
     user: 'support@pinkettu.com.ng',
@@ -12,7 +13,7 @@ const transporter = nodemailer.createTransport({
 export default function sendMail(name, email, message) {
   const mailOptions = {
     from: email,
-    to: 'longyarnz@gmail.com',
+    to: 'support@pinkettu.com.ng',
     subject: `${name} Contacted You!`,
     text: message,
     dsn: {
@@ -27,7 +28,7 @@ export default function sendMail(name, email, message) {
     if (error) {
       console.log(error);
     } else {
-      console.log('Email sent: ' + JSON.stringify(info));
+      console.log(`Email sent: ${JSON.stringify(info)}`);
     }
   });
 }
