@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  host: 'twentyfour.qservers.net',
+  host: 'mail.pinkettu.com.ng',
   port: 587,
   secure: false,
   auth: {
@@ -10,18 +10,12 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export default function sendMail(name, email, message) {
+export default function sendMail(name, email, text) {
   const mailOptions = {
     from: email,
     to: 'support@pinkettu.com.ng',
     subject: `${name} Contacted You!`,
-    text: message,
-    dsn: {
-      id: 'some random message specific id',
-      return: 'headers',
-      notify: ['failure', 'delay', 'success'],
-      recipient: 'support@pinkettu.com.ng'
-    }
+    text
   };
 
   transporter.sendMail(mailOptions, function (error, info) {

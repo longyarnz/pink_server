@@ -49,10 +49,10 @@ router.get('/:mailId', tokenParser, async (req, res) => {
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {object} A newly created mail object
  */
-router.post('/', validateMailInput, tokenParser, async (req, res) => {
+router.post('/', validateMailInput, async (req, res) => {
   try {
-    const { body: { email, name, message } } = req;
-    const mail = await createMail(name, email, message);
+    const { body: { email, name, text } } = req;
+    const mail = await createMail(name, email, text);
     res.status(200).json(mail);
   }
   catch (err) {

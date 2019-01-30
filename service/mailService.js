@@ -5,10 +5,10 @@
 import MailModel from '../models/mail';
 import sendMail from '../connection/mail';
 
-const createMail = async (name, email, message) => {
+const createMail = async (name, email, text) => {
   try {
-    const mail = await MailModel.create({ name, email, message });
-    sendMail(name, email, message);
+    const mail = await MailModel.create({ name, email, text });
+    sendMail(name, email, text);
     return mail;
   }
   catch (err) {
