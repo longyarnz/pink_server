@@ -4,6 +4,7 @@ coverage/*
 .vscode/
 server/
 pinketu-master/
+php/
 
 # Files
 *.zip
