@@ -1,11 +1,9 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  host: 'mail.pinkettu.com.ng',
-  port: 587,
-  secure: false,
+  service: 'gmail',
   auth: {
-    user: 'support@pinkettu.com.ng',
+    user: 'pinkettung@gmail.com',
     pass: process.env.MAIL_PASS
   }
 });
