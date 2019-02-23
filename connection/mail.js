@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 export default function sendMail(name, email, text) {
   const mailOptions = {
     from: email,
-    to: 'support@pinkettu.com.ng',
+    to: 'pinkettung@gmail.com',
     subject: `${name} Contacted You!`,
     text
   };
