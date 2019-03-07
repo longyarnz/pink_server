@@ -8,6 +8,7 @@ import cors from 'cors';
 import Auth from './api/auth';
 import Mail from './api/mail';
 import Hookup from './api/hookup';
+import Profile from './api/profile';
 import Transaction from './api/transaction';
 
 /**
@@ -44,6 +45,7 @@ app.use(bodyParser.json());
 app.use('/auth', Auth);
 app.use('/mail', Mail);
 app.use('/hookup', Hookup);
+app.use('/profile', Profile);
 app.use('/transaction', Transaction);
 
 /**

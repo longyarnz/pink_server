@@ -98,7 +98,7 @@ router.post('/login', validateLoginInput, async (req, res) => {
 router.get('/logout', tokenParser, (req, res) => {
   SERVER_KEY = UUID.v4();
   res.header['authorization'] = '';
-  res.status(200).json({ message: 'User logged out' });
+  res.json({ message: 'User is logged out'});
 });
 
 export { SERVER_KEY };

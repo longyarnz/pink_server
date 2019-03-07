@@ -58,6 +58,16 @@ const checkIfUserExists = async (query) => {
   }
 };
 
+const getAUserWhere = async (query) => {
+  try {
+    const user = await UserModel.findOne(query);
+    return user;
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
 const getUserEmail =  async (userId) => {
   try{
     const { email } = await UserModel.findOne({_id: userId}).select('email');
@@ -68,4 +78,24 @@ const getUserEmail =  async (userId) => {
   }
 };
 
-export { createUser, authenticateUser, checkIfUserExists, getUserEmail };
+const updateUserProfile = async (userId, profile) => {
+  try {
+    const user = await UserModel.findOneAndUpdate({ _id: userId }, profile, { new: true });
+    return user;
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
+const deleteUserById = async (userId) => {
+  try {
+    const remove = await UserModel.deleteOne({ _id: userId });
+    return remove.ok === 1;
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
+export { createUser, authenticateUser, checkIfUserExists, getUserEmail, getAUserWhere, updateUserProfile, deleteUserById };
