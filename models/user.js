@@ -11,6 +11,8 @@ const User = new Schema({
   email: String,
   password: String,
   username: String,
+  location: { type: String, default: 'Lagos Mainland' },
+  rank: { type: Number, default: 5 },
   images: [ String ],
   date_created: { type: Date, default: Date.now }
 });

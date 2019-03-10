@@ -36,11 +36,11 @@ const authenticateUser = async (credentials) => {
  */
 const createUser = async (credentials) => {
   try {
-    let { email, password, username, worker, image } = credentials;
+    let { email, password, username, worker, location, rank, image } = credentials;
     const status = await checkIfUserExists({ email });
     if(status) throw('User Already Exists');
     password = await bcrypt.hashSync(password, HASH);
-    const user = await UserModel.create({ email, password, username, worker, images: [ image ] });
+    const user = await UserModel.create({ email, password, username, worker, location, rank, images: [ image ] });
     return typeof user === 'object' ? { isCreated: true, id: user._id } : { isCreated: false, id: null };
   }
   catch (err) {
@@ -52,6 +52,16 @@ const checkIfUserExists = async (query) => {
   try{
     const user = await UserModel.findOne(query);
     return user === null ? false : true;
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
+const getAllUsersWhere = async (query) => {
+  try {
+    const user = await UserModel.find(...query);
+    return user;
   }
   catch (err) {
     throw err;
@@ -98,4 +108,4 @@ const deleteUserById = async (userId) => {
   }
 };
 
-export { createUser, authenticateUser, checkIfUserExists, getUserEmail, getAUserWhere, updateUserProfile, deleteUserById };
+export { createUser, authenticateUser, checkIfUserExists, getUserEmail, getAllUsersWhere, getAUserWhere, updateUserProfile, deleteUserById };

@@ -6,7 +6,7 @@ import express from 'express';
 import tokenParser from '../middleware/tokenParser';
 import logger from '../middleware/logger';
 import {
-  getAUserWhere, updateUserProfile
+  getAUserWhere, updateUserProfile, getAllUsersWhere
 } from '../service/userService';
 const router = express.Router();
 
@@ -18,8 +18,41 @@ const router = express.Router();
 router.get('/', tokenParser, async (req, res) => {
   try {
     const { userId } = req;
-    const { worker, images, email, username } = await getAUserWhere({ _id: userId });
-    res.status(200).json({ worker, images, email, username });
+    const { worker, images, email, username, location, rank } = await getAUserWhere({ _id: userId });
+    res.status(200).json({ worker, images, email, username, location, rank });
+  }
+  catch (err) {
+    logger.error(err); 
+    res.status(400).json('NetworkError: Unable to get user profile');
+  }
+});
+
+/**
+ * @description Gets a user profile
+ * @param {middleware} tokenParser - Extracts userId from token
+ * @returns {Response} JSON
+ */
+router.get('/pinks', async (req, res) => {
+  try {
+    const users = await getAllUsersWhere([{ worker: true }, 'username images rank']);
+    res.status(200).json(users);
+  }
+  catch (err) {
+    logger.error(err); 
+    res.status(400).json('NetworkError: Unable to get user profile');
+  }
+});
+
+/**
+ * @description Gets a user profile
+ * @param {middleware} tokenParser - Extracts userId from token
+ * @returns {Response} JSON
+ */
+router.get('/pinks/:id', async (req, res) => {
+  const { params: { id: _id } } = req;
+  try {
+    const users = await getAllUsersWhere([{ worker: true, _id }, 'username images rank']);
+    res.status(200).json(users);
   }
   catch (err) {
     logger.error(err); 
