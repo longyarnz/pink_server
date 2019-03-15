@@ -98,7 +98,7 @@ const updateUserProfile = async (userId, profile) => {
       $push: {
         images: {
           $each: [...profile.image, ...profile.more],
-          $position: 0
+          $position: profile.image.length > 0 ? 0 : 1
         }
       }
     }, { new: true });
