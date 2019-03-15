@@ -68,8 +68,8 @@ router.get('/pinks/:id', async (req, res) => {
 router.put('/', tokenParser, async (req, res) => {
   try {
     const { body: profile, userId } = req;
-    const { worker, images, email, username } = await updateUserProfile(userId, profile);
-    res.status(200).json({ worker, images, email, username });
+    const { worker, images, username, location } = await updateUserProfile(userId, profile);
+    res.status(200).json({ worker, images, username, location });
   }
   catch (err) {
     logger.error(err); 

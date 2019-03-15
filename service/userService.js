@@ -90,7 +90,18 @@ const getUserEmail =  async (userId) => {
 
 const updateUserProfile = async (userId, profile) => {
   try {
-    const user = await UserModel.findOneAndUpdate({ _id: userId }, profile, { new: true });
+    const user = await UserModel.findOneAndUpdate({ _id: userId }, {
+      $set: {
+        username: profile.username,
+        location: profile.location,
+      },
+      $push: {
+        images: {
+          $each: [...profile.image, ...profile.more],
+          $position: 0
+        }
+      }
+    }, { new: true });
     return user;
   }
   catch (err) {

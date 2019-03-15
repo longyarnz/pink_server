@@ -10,6 +10,7 @@ const Hookup = new Schema({
   randomKey: String,
   client: String,
   worker: String,
+  rank: { type: Number, default: 5 },
   completed: { type: Boolean, default: false },
   date_created: { type: Date, default: Date.now },
 });
