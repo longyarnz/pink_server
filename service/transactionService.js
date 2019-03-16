@@ -4,10 +4,10 @@
  */
 import TransactionModel from '../models/transaction';
 
-const createTransaction = async (amount, user, hookup) => {
+const createTransaction = async (amount, user, hookup, purpose) => {
   try {
-    const transaction = await TransactionModel.create({ amount, user, hookup });
-    return transaction;
+    const transaction = await TransactionModel.create({ amount, user, hookup, purpose });
+    return await TransactionModel.findOne({ _id: transaction._id}).populate('user', 'email');
   }
   catch (err) {
     throw err;

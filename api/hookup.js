@@ -4,6 +4,7 @@
  */
 import express from 'express';
 import tokenParser from '../middleware/tokenParser';
+import activator from '../middleware/activator';
 import logger from '../middleware/logger';
 import {
   createHookup, getAllUserHookups, getAUserHookup, setHookupAsComplete
@@ -15,7 +16,7 @@ const router = express.Router();
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {Response} JSON
  */
-router.get('/', tokenParser, async (req, res) => {
+router.get('/', tokenParser, activator, async (req, res) => {
   try {
     const { userId } = req;
     const hookup = await getAllUserHookups({
@@ -36,7 +37,7 @@ router.get('/', tokenParser, async (req, res) => {
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {Response} JSON
  */
-router.get('/:hookupId', tokenParser, async (req, res) => {
+router.get('/:hookupId', tokenParser, activator, async (req, res) => {
   try {
     const { params: { hookupId }, userId } = req;
     const hookup = await getAUserHookup(userId, hookupId);
@@ -53,7 +54,7 @@ router.get('/:hookupId', tokenParser, async (req, res) => {
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {object} A newly created hookup object
  */
-router.post('/', tokenParser, async (req, res) => {
+router.post('/', tokenParser, activator, async (req, res) => {
   try {
     const { body: { worker, client, randomKey } } = req;
     const hookup = await createHookup(worker, client, randomKey);
@@ -70,7 +71,7 @@ router.post('/', tokenParser, async (req, res) => {
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {Response} JSON
  */
-router.put('/:hookupId', tokenParser, async (req, res) => {
+router.put('/:hookupId', tokenParser, activator, async (req, res) => {
   try {
     const { params: { hookupId }, userId: user } = req;
     const hookup = await setHookupAsComplete(user, hookupId);
@@ -86,7 +87,7 @@ router.put('/:hookupId', tokenParser, async (req, res) => {
  * @description Deletes a single user hookup
  * @param {middleware} tokenParser - Extracts userId from token
  */
-router.delete('/:hookupId', tokenParser, async (req, res) => {
+router.delete('/:hookupId', tokenParser, activator, async (req, res) => {
   try {
     // const { params: { hookupId } } = req;
     // const removed = await deleteHookupById(hookupId);

@@ -9,9 +9,9 @@ const Schema = mongoose.Schema;
 const Transaction = new Schema({
   success: { type: Boolean, default: false },
   amount: Number,
-  user: String,
+  user: { type: String, ref: 'User'},
   hookup: String,
-  reference: String,
+  purpose: String,
   date_created: { type: Date, default: Date.now },
 });
 

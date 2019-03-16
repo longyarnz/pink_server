@@ -6,7 +6,7 @@ import express from 'express';
 import 'babel-polyfill';
 import JWT from 'jsonwebtoken';
 import UUID from 'uuid';
-import { authenticateUser, createUser } from '../service/userService';
+import { authenticateUser, createUser, checkIfUserExists } from '../service/userService';
 import validateInput from '../middleware/validateInput';
 import validateLoginInput from '../middleware/validateLoginInput';
 import tokenParser from '../middleware/tokenParser';
@@ -55,8 +55,14 @@ router.post('/login', validateLoginInput, async (req, res) => {
 
   try {
     const user = await authenticateUser({ email, password });
+    const userHasActivated = await checkIfUserExists({
+      $or: [
+        { email, isActivated: true, worker: true }, 
+        { email, worker: false }
+      ]
+    });
 
-    if (user.isValid) {
+    if (userHasActivated && user.isValid) {
       /**
        * @description Creates JWT token from the email and password
        */
@@ -72,6 +78,13 @@ router.post('/login', validateLoginInput, async (req, res) => {
          * @description Returns user token
          */
         res.status(200).json(message);
+      });
+    }
+
+    else if(!userHasActivated) {
+      res.status(400).json({
+        id: user.id,
+        message: 'User has not activated the account'
       });
     }
 

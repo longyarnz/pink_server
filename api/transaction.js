@@ -47,6 +47,7 @@ router.get('/:transactionId', tokenParser, async (req, res) => {
   }
 });
 
+
 /**
  * @description Creates a single transaction
  * @param {middleware} tokenParser - Extracts userId from token
@@ -54,8 +55,26 @@ router.get('/:transactionId', tokenParser, async (req, res) => {
  */
 router.post('/', validateTransactionInput, tokenParser, async (req, res) => {
   try {
-    const { body: { amount, hookup }, userId: user } = req;
-    const transaction = await createTransaction(amount, user, hookup);
+    const { body: { amount, hookup, purpose }, userId: user } = req;
+    const transaction = await createTransaction(amount, user, hookup, purpose);
+    res.status(200).json(transaction);
+  }
+  catch (err) {
+    logger.error(err); 
+    res.status(400).json('NetworkError: Unable to create a user transaction');
+  }
+});
+
+/**
+ * @description Creates a single transaction for account activation
+ * @param {middleware} tokenParser - Extracts userId from token
+ * @returns {object} A newly created transaction object
+ */
+router.post('/activate/:user', async (req, res) => {
+  try {
+    const { params: { user } } = req;
+    const amount = 1000, hookup = null, purpose = 'Account Activation';
+    const transaction = await createTransaction(amount, user, hookup, purpose);
     res.status(200).json(transaction);
   }
   catch (err) {

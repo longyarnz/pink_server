@@ -8,6 +8,7 @@ const Schema = mongoose.Schema;
 
 const User = new Schema({
   worker: { type: Boolean, default: false },
+  isActivated: { type: Boolean, default: false },
   email: String,
   password: String,
   username: String,
