@@ -6,7 +6,7 @@ import express from 'express';
 import tokenParser from '../middleware/tokenParser';
 import logger from '../middleware/logger';
 import {
-  createHookup, getAHookupWhere, getAUserHookup, setHookupAsComplete
+  createHookup, getAllUserHookups, getAUserHookup, setHookupAsComplete
 } from '../service/hookupService';
 const router = express.Router();
 
@@ -18,7 +18,7 @@ const router = express.Router();
 router.get('/', tokenParser, async (req, res) => {
   try {
     const { userId } = req;
-    const hookup = await getAHookupWhere({
+    const hookup = await getAllUserHookups({
       $or: [
         { worker: userId }, { client: userId }
       ]
@@ -27,7 +27,7 @@ router.get('/', tokenParser, async (req, res) => {
   }
   catch (err) {
     logger.error(err); 
-    res.status(400).json('NetworkError: Unable to get user hookups');
+    res.status(400).json({message: 'NetworkError: Unable to get user hookups'});
   }
 });
 

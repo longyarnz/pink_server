@@ -98,11 +98,25 @@ const updateUserProfile = async (userId, profile) => {
       $push: {
         images: {
           $each: [...profile.image, ...profile.more],
-          $position: profile.image.length > 0 ? 0 : 1
+          $position: profile.image.length > 0 ? 0 : 999
         }
       }
     }, { new: true });
     return user;
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
+const deleteUserImage = async (userId, image) => {
+  try {
+    const profile = await UserModel.findOneAndUpdate({ _id: userId }, {
+      $pull: {
+        images: image
+      }
+    }, { new: true });
+    return !profile.images.some(i => i === image);
   }
   catch (err) {
     throw err;
@@ -119,4 +133,4 @@ const deleteUserById = async (userId) => {
   }
 };
 
-export { createUser, authenticateUser, checkIfUserExists, getUserEmail, getAllUsersWhere, getAUserWhere, updateUserProfile, deleteUserById };
+export { createUser, authenticateUser, checkIfUserExists, getUserEmail, getAllUsersWhere, getAUserWhere, updateUserProfile, deleteUserImage, deleteUserById };

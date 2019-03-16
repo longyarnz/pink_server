@@ -16,7 +16,21 @@ const createHookup = async (worker, client, randomKey) => {
 
 const getAHookupWhere = async (query) => {
   try {
-    const hookup = await HookupModel.findOne(query);
+    const hookup = await HookupModel.findOne(query)
+      .populate('worker', 'username')
+      .populate('client', 'username');
+    return hookup;
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
+const getAllUserHookups = async (query) => {
+  try {
+    const hookup = await HookupModel.find(query)
+      .populate('worker', 'username')
+      .populate('client', 'username');
     return hookup;
   }
   catch (err) {
@@ -59,4 +73,4 @@ const deleteHookupById = async (hookupId) => {
   }
 };
 
-export { createHookup, getAHookupWhere, getAUserHookup, setHookupAsComplete, deleteHookupById };
+export { createHookup, getAHookupWhere, getAUserHookup, getAllUserHookups, setHookupAsComplete, deleteHookupById };

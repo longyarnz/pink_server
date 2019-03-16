@@ -6,7 +6,7 @@ import express from 'express';
 import tokenParser from '../middleware/tokenParser';
 import logger from '../middleware/logger';
 import {
-  getAUserWhere, updateUserProfile, getAllUsersWhere
+  getAUserWhere, updateUserProfile, getAllUsersWhere, deleteUserImage
 } from '../service/userService';
 const router = express.Router();
 
@@ -74,6 +74,22 @@ router.put('/', tokenParser, async (req, res) => {
   catch (err) {
     logger.error(err); 
     res.status(400).json('NetworkError: Unable to update user profile');
+  }
+});
+
+/**
+ * @description Deletes a single Image from User profile
+ * @param {middleware} tokenParser - Extracts userId from token
+ */
+router.delete('/image/:image', tokenParser, async (req, res) => {
+  try {
+    const { params: { image }, userId } = req;
+    const removed = await deleteUserImage(userId, image);
+    res.status(200).json(removed);
+  }
+  catch (err) {
+    logger.error(err); 
+    res.status(400).json({message: 'NetworkError: Unable to delete image'});
   }
 });
 

@@ -8,8 +8,8 @@ const Schema = mongoose.Schema;
 
 const Hookup = new Schema({
   randomKey: String,
-  client: String,
-  worker: String,
+  client: { type: String, ref: 'User' },
+  worker: { type: String, ref: 'User' },
   rank: { type: Number, default: 5 },
   completed: { type: Boolean, default: false },
   date_created: { type: Date, default: Date.now },
