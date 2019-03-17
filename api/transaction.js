@@ -7,7 +7,7 @@ import logger from '../middleware/logger';
 import tokenParser from '../middleware/tokenParser';
 import validateTransactionInput from '../middleware/validateTransactionInput';
 import {
-  getUserTransactions, createTransaction, deleteTransactionById, setTransactionSuccess, getATransactionWhere
+  getUserTransactions, createTransaction, verifyTransaction, deleteTransactionById, setTransactionSuccess, getATransactionWhere
 } from '../service/transactionService';
 const router = express.Router();
 
@@ -47,7 +47,6 @@ router.get('/:transactionId', tokenParser, async (req, res) => {
   }
 });
 
-
 /**
  * @description Creates a single transaction
  * @param {middleware} tokenParser - Extracts userId from token
@@ -79,7 +78,23 @@ router.post('/activate/:user', async (req, res) => {
   }
   catch (err) {
     logger.error(err); 
-    res.status(400).json('NetworkError: Unable to create a user transaction');
+    res.status(400).json({message: 'NetworkError: Unable to create a user transaction'});
+  }
+});
+
+/**
+ * @description Verifies a single user transaction
+ * @returns {object} A newly created transaction object
+ */
+router.post('/verify', async (req, res) => {
+  try {
+    const { body: { response } } = req;
+    const transaction = await verifyTransaction(response);
+    res.status(200).json(transaction);
+  }
+  catch (err) {
+    logger.error(err); 
+    res.status(400).json({message: 'NetworkError: Unable to verify user transaction'});
   }
 });
 
