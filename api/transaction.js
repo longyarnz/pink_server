@@ -107,9 +107,13 @@ router.post('/verify', async (req, res) => {
         res.status(200).json('Activation is Verified');
         break;
       }
-      ++i;
+
+      else if(!transaction && i >= 2){
+        res.status(400).json('Activation is not Verified');
+      }
+      
+      i++;
     } while (i < 2);
-    if(!transaction) res.status(400).json('Activation is not Verified');
   }
   catch (err) {
     logger.error(err);
