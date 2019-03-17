@@ -77,11 +77,11 @@ router.post('/activate/:user', async (req, res) => {
       _id: user, isActivated: true, worker: true
     });
 
-    if(userHasActivated){
+    if (userHasActivated) {
       res.status(200).json({ status: 'Account is already activated' });
     }
 
-    else{
+    else {
       const amount = 1000, hookup = null, purpose = 'Account Activation';
       const { _id: id, user: profile } = await createTransaction(amount, user, hookup, purpose);
       res.status(200).json({ id, user: profile });
@@ -100,20 +100,15 @@ router.post('/activate/:user', async (req, res) => {
 router.post('/verify', async (req, res) => {
   try {
     const { body } = req;
-    let i = 0, transaction;
-    do {
-      transaction = await verifyTransaction(body);
-      if(transaction) {
-        res.status(200).json('Activation is Verified');
-        break;
-      }
+    const transaction = await verifyTransaction(body);
+    if (transaction) {
+      res.status(200).json('Activation is Verified');
+    }
 
-      else if(!transaction && i >= 2){
-        res.status(400).json('Activation is not Verified');
-      }
-      
-      i++;
-    } while (i < 2);
+    else {
+      res.status(400).json('Activation is not Verified');
+    }
+
   }
   catch (err) {
     logger.error(err);
