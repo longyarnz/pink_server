@@ -2,8 +2,9 @@
  * @fileoverview Methods for querying data from the transactions collection.
  * @exports { createTransaction, getATransactionWhere, getUserTransactions, deleteTransactionById }
  */
-import TransactionModel from '../models/transaction';
 import paystack from 'paystack';
+import TransactionModel from '../models/transaction';
+import { activateUserAccount } from './userService';
 
 const createTransaction = async (amount, user, hookup, purpose) => {
   try {
@@ -15,13 +16,20 @@ const createTransaction = async (amount, user, hookup, purpose) => {
   }
 };
 
-const verifyTransaction = async ({ reference }) => {
+const verifyTransaction = async ({ reference, id }) => {
   const PaystackAPI = paystack(process.env.paystack_sk);
+
   try {
-    const transaction = await PaystackAPI.transactions.verify(reference);
-    console.log(transaction);
+    const transaction = await PaystackAPI.transaction.verify(reference);
     const isSuccessful = transaction.message === 'Verification successful';
-    return isSuccessful ? await setTransactionSuccess(reference) : 'Transaction Failed';
+
+    if(isSuccessful){
+      const updatedTransaction = await setTransactionSuccess(reference);
+      const activatedUser = await activateUserAccount(id);
+      return updatedTransaction && activatedUser;
+    }
+
+    else return false;
   }
   catch (err) {
     throw err;
@@ -52,7 +60,7 @@ const getUserTransactions = async (user) => {
 const setTransactionSuccess = async (transactionId) => {
   try {
     const transaction = await TransactionModel.findOneAndUpdate({ _id: transactionId }, { success: true }, { new: true });
-    return transaction && transaction.success ? 'Transaction is successful' : 'Transaction/User is incorrect';
+    return transaction && transaction.success;
   }
   catch (err) {
     throw err;

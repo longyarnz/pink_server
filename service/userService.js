@@ -109,6 +109,18 @@ const updateUserProfile = async (userId, profile) => {
   }
 };
 
+const activateUserAccount = async (userId) => {
+  try {
+    const user = await UserModel.findOneAndUpdate({ _id: userId }, {
+      $set: { isActivated: true }
+    }, { new: true });
+    return user.isActivated;
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
 const deleteUserImage = async (userId, image) => {
   try {
     const profile = await UserModel.findOneAndUpdate({ _id: userId }, {
@@ -133,4 +145,4 @@ const deleteUserById = async (userId) => {
   }
 };
 
-export { createUser, authenticateUser, checkIfUserExists, getUserEmail, getAllUsersWhere, getAUserWhere, updateUserProfile, deleteUserImage, deleteUserById };
+export { createUser, authenticateUser, activateUserAccount, checkIfUserExists, getUserEmail, getAllUsersWhere, getAUserWhere, updateUserProfile, deleteUserImage, deleteUserById };

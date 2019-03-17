@@ -9,6 +9,7 @@ import validateTransactionInput from '../middleware/validateTransactionInput';
 import {
   getUserTransactions, createTransaction, verifyTransaction, deleteTransactionById, setTransactionSuccess, getATransactionWhere
 } from '../service/transactionService';
+import { checkIfUserExists } from '../service/userService';
 const router = express.Router();
 
 /**
@@ -23,7 +24,7 @@ router.get('/', tokenParser, async (req, res) => {
     res.status(200).json(transaction);
   }
   catch (err) {
-    logger.error(err); 
+    logger.error(err);
     res.status(400).json('NetworkError: Unable to get user transactions');
   }
 });
@@ -42,7 +43,7 @@ router.get('/:transactionId', tokenParser, async (req, res) => {
     res.status(200).json(transaction);
   }
   catch (err) {
-    logger.error(err); 
+    logger.error(err);
     res.status(400).json('NetworkError: Unable to get user transaction');
   }
 });
@@ -59,7 +60,7 @@ router.post('/', validateTransactionInput, tokenParser, async (req, res) => {
     res.status(200).json(transaction);
   }
   catch (err) {
-    logger.error(err); 
+    logger.error(err);
     res.status(400).json('NetworkError: Unable to create a user transaction');
   }
 });
@@ -72,13 +73,23 @@ router.post('/', validateTransactionInput, tokenParser, async (req, res) => {
 router.post('/activate/:user', async (req, res) => {
   try {
     const { params: { user } } = req;
-    const amount = 1000, hookup = null, purpose = 'Account Activation';
-    const transaction = await createTransaction(amount, user, hookup, purpose);
-    res.status(200).json(transaction);
+    const userHasActivated = await checkIfUserExists({
+      _id: user, isActivated: true, worker: true
+    });
+
+    if(userHasActivated){
+      res.status(200).json({ status: 'Account is already activated' });
+    }
+
+    else{
+      const amount = 1000, hookup = null, purpose = 'Account Activation';
+      const { _id: id, user: profile } = await createTransaction(amount, user, hookup, purpose);
+      res.status(200).json({ id, user: profile });
+    }
   }
   catch (err) {
-    logger.error(err); 
-    res.status(400).json({message: 'NetworkError: Unable to create a user transaction'});
+    logger.error(err);
+    res.status(400).json({ message: 'NetworkError: Unable to create a user transaction' });
   }
 });
 
@@ -88,13 +99,21 @@ router.post('/activate/:user', async (req, res) => {
  */
 router.post('/verify', async (req, res) => {
   try {
-    const { body: { response } } = req;
-    const transaction = await verifyTransaction(response);
-    res.status(200).json(transaction);
+    const { body } = req;
+    let i = 0, transaction;
+    do {
+      transaction = await verifyTransaction(body);
+      if(transaction) {
+        res.status(200).json('Activation is Verified');
+        break;
+      }
+      ++i;
+    } while (i < 2);
+    if(!transaction) res.status(400).json('Activation is not Verified');
   }
   catch (err) {
-    logger.error(err); 
-    res.status(400).json({message: 'NetworkError: Unable to verify user transaction'});
+    logger.error(err);
+    res.status(400).json({ message: 'NetworkError: Unable to verify user transaction' });
   }
 });
 
@@ -110,7 +129,7 @@ router.put('/:transactionId', tokenParser, async (req, res) => {
     res.status(200).json(transaction);
   }
   catch (err) {
-    logger.error(err); 
+    logger.error(err);
     res.status(400).json('NetworkError: Unable to update transaction');
   }
 });
@@ -127,7 +146,7 @@ router.get('/:transactionId', tokenParser, async (req, res) => {
     res.status(200).json(transaction);
   }
   catch (err) {
-    logger.error(err); 
+    logger.error(err);
     res.status(400).json('NetworkError: Unable to get user transaction');
   }
 });
@@ -144,7 +163,7 @@ router.delete('/:transactionId', tokenParser, async (req, res) => {
     res.status(200).json(removed);
   }
   catch (err) {
-    logger.error(err); 
+    logger.error(err);
     res.status(400).json('NetworkError: Unable to delete user transaction');
   }
 });
