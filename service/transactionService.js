@@ -17,7 +17,7 @@ const createTransaction = async (amount, user, hookup, purpose) => {
 };
 
 const verifyTransaction = async ({ reference, id }) => {
-  const PaystackAPI = paystack(process.env.paystack_sk);
+  const PaystackAPI = paystack('sk_test_9b5628c00074df50ca6aa875e5d3c32db208a439');
 
   try {
     const transaction = await PaystackAPI.transaction.verify(reference);
