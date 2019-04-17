@@ -54,15 +54,22 @@ router.get('/:hookupId', tokenParser, activator, async (req, res) => {
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {object} A newly created hookup object
  */
-router.post('/', tokenParser, activator, async (req, res) => {
+router.post('/', tokenParser, async (req, res) => {
   try {
-    const { body: { worker, client, randomKey } } = req;
+    const { body: { worker }, userId: client } = req;
+    const alpha = 'JKHIHGFKUEIUFISHDFSHKDKPOWPCMZAXQYWIOZLBKDKSGKFBSDKFKJDFVKABNKJNNSOOJPAOISHDOSA';
+    const random = i => Math.ceil(Math.random() * i);
+    const randomKey = `${alpha.charAt(random(78))}${alpha.charAt(random(78))}-${random(999999)}`;
+
     const hookup = await createHookup(worker, client, randomKey);
-    res.status(200).json(hookup);
+    const { _id: id } = hookup;
+
+    res.status(200).json({ id, randomKey });
   }
+
   catch (err) {
     logger.error(err); 
-    res.status(400).json('NetworkError: Unable to create a user hookup');
+    res.status(400).json('NetworkError: Unable to Hookup');
   }
 });
 

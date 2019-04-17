@@ -4,7 +4,7 @@
  */
 import HookupModel from '../models/hookup';
 
-const createHookup = async (worker, client, randomKey) => {
+export const createHookup = async (worker, client, randomKey) => {
   try {
     const hookup = await HookupModel.create({ worker, client, randomKey });
     return hookup;
@@ -14,7 +14,7 @@ const createHookup = async (worker, client, randomKey) => {
   }
 };
 
-const getAHookupWhere = async (query) => {
+export const getAHookupWhere = async (query) => {
   try {
     const hookup = await HookupModel.findOne(query)
       .populate('worker', 'username')
@@ -26,7 +26,7 @@ const getAHookupWhere = async (query) => {
   }
 };
 
-const getAllUserHookups = async (query) => {
+export const getAllUserHookups = async (query) => {
   try {
     const hookup = await HookupModel.find(query)
       .populate('worker', 'username')
@@ -38,7 +38,7 @@ const getAllUserHookups = async (query) => {
   }
 };
 
-const getAUserHookup = async (userId, hookupId) => {
+export const getAUserHookup = async (userId, hookupId) => {
   try {
     const hookups = await HookupModel.find({
       $or: [
@@ -53,7 +53,7 @@ const getAUserHookup = async (userId, hookupId) => {
   }
 };
 
-const setHookupAsComplete = async (user, hookupId) => {
+export const setHookupAsComplete = async (user, hookupId) => {
   try {
     const hookup = await HookupModel.findOneAndUpdate({ _id: hookupId, client: user }, { completed: true }, { new: true });
     return hookup.completed ? 'Hookup is completed' : 'Unable to complete hookup';
@@ -63,7 +63,7 @@ const setHookupAsComplete = async (user, hookupId) => {
   }
 };
 
-const deleteHookupById = async (hookupId) => {
+export const deleteHookupById = async (hookupId) => {
   try {
     const remove = await HookupModel.deleteOne({ _id: hookupId });
     return remove.ok === 1;
@@ -72,5 +72,3 @@ const deleteHookupById = async (hookupId) => {
     throw err;
   }
 };
-
-export { createHookup, getAHookupWhere, getAUserHookup, getAllUserHookups, setHookupAsComplete, deleteHookupById };

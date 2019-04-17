@@ -19,8 +19,8 @@ const router = express.Router();
 router.get('/', tokenParser, activator, async (req, res) => {
   try {
     const { userId } = req;
-    const { worker, images, email, username, location, rank } = await getAUserWhere({ _id: userId });
-    res.status(200).json({ worker, images, email, username, location, rank });
+    const { _id, worker, images, email, username, location, rank } = await getAUserWhere({ _id: userId });
+    res.status(200).json({ id: _id, worker, images, email, username, location, rank });
   }
   catch (err) {
     logger.error(err);

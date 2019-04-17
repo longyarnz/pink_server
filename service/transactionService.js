@@ -5,8 +5,9 @@
 import paystack from 'paystack';
 import TransactionModel from '../models/transaction';
 import { activateUserAccount } from './userService';
+import sendMailToWorker from './mailService';
 
-const createTransaction = async (amount, user, hookup, purpose) => {
+export const createTransaction = async (amount, user, hookup, purpose) => {
   try {
     const transaction = await TransactionModel.create({ amount, user, hookup, purpose });
     return await TransactionModel.findOne({ _id: transaction._id}).populate('user', 'email');
@@ -16,17 +17,16 @@ const createTransaction = async (amount, user, hookup, purpose) => {
   }
 };
 
-const verifyTransaction = async ({ reference, id }) => {
+export const verifyTransaction = async ({ reference, id }, type) => {
   const PaystackAPI = paystack('sk_test_9b5628c00074df50ca6aa875e5d3c32db208a439');
 
   try {
     const transaction = await PaystackAPI.transaction.verify(reference);
     const isSuccessful = transaction.message === 'Verification successful';
-
-    if(isSuccessful){
+    if (isSuccessful){
       const updatedTransaction = await setTransactionSuccess(reference);
-      const activatedUser = await activateUserAccount(id);
-      return updatedTransaction && activatedUser;
+      const sideEffect = type === 'account' ? await activateUserAccount(id) : sendMailToWorker(id);
+      return updatedTransaction && sideEffect;
     }
 
     else return false;
@@ -36,7 +36,7 @@ const verifyTransaction = async ({ reference, id }) => {
   }
 };
 
-const getATransactionWhere = async (query) => {
+export const getATransactionWhere = async (query) => {
   try {
     const transaction = await TransactionModel.findOne(query);
     return transaction;
@@ -46,7 +46,7 @@ const getATransactionWhere = async (query) => {
   }
 };
 
-const getUserTransactions = async (user) => {
+export const getUserTransactions = async (user) => {
   try {
     const transactions = await TransactionModel.find({ user });
     return transactions;
@@ -57,9 +57,12 @@ const getUserTransactions = async (user) => {
 };
 
 
-const setTransactionSuccess = async (transactionId) => {
+export const setTransactionSuccess = async (id) => {
   try {
-    const transaction = await TransactionModel.findOneAndUpdate({ _id: transactionId }, { success: true }, { new: true });
+    const transaction = await TransactionModel.findOneAndUpdate({
+      $or: [
+        { _id: id }, { hookup: id }
+      ]}, { success: true }, { new: true });
     return transaction && transaction.success;
   }
   catch (err) {
@@ -67,7 +70,7 @@ const setTransactionSuccess = async (transactionId) => {
   }
 };
 
-const deleteTransactionById = async (user, transactionId) => {
+export const deleteTransactionById = async (user, transactionId) => {
   try {
     const remove = await TransactionModel.deleteOne({ _id: transactionId, user });
     return remove && remove.ok === 1 ? 'Transaction Deleted' : 'Transaction/User is incorrect';
@@ -76,5 +79,3 @@ const deleteTransactionById = async (user, transactionId) => {
     throw err;
   }
 };
-
-export { createTransaction, verifyTransaction, getATransactionWhere, getUserTransactions, setTransactionSuccess, deleteTransactionById };

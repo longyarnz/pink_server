@@ -12,7 +12,7 @@ const HASH = parseInt(process.env.HASH);
  * @param {object} credentials - email and password object
  * @return {object} isValid and id
  */
-const authenticateUser = async (credentials) => {
+export const authenticateUser = async (credentials) => {
   try {
     let { email, password } = credentials;
     const user = await UserModel.findOne({ email }).select('password');
@@ -34,7 +34,7 @@ const authenticateUser = async (credentials) => {
  * @param {object} credentials - email and password object
  * @return {object} isValid and id
  */
-const createUser = async (credentials) => {
+export const createUser = async (credentials) => {
   try {
     let { email, password, username, worker, location, rank, image } = credentials;
     const status = await checkIfUserExists({ email });
@@ -48,7 +48,7 @@ const createUser = async (credentials) => {
   }
 };
 
-const checkIfUserExists = async (query) => {
+export const checkIfUserExists = async (query) => {
   try{
     const user = await UserModel.findOne(query);
     return user === null ? false : true;
@@ -58,7 +58,7 @@ const checkIfUserExists = async (query) => {
   }
 };
 
-const getAllUsersWhere = async (query) => {
+export const getAllUsersWhere = async (query) => {
   try {
     const user = await UserModel.find(...query);
     return user;
@@ -68,7 +68,7 @@ const getAllUsersWhere = async (query) => {
   }
 };
 
-const getAUserWhere = async (query) => {
+export const getAUserWhere = async (query) => {
   try {
     const user = await UserModel.findOne(query);
     return user;
@@ -78,7 +78,7 @@ const getAUserWhere = async (query) => {
   }
 };
 
-const getUserEmail =  async (userId) => {
+export const getUserEmail =  async (userId) => {
   try{
     const { email } = await UserModel.findOne({_id: userId}).select('email');
     return email;
@@ -88,7 +88,7 @@ const getUserEmail =  async (userId) => {
   }
 };
 
-const updateUserProfile = async (userId, profile) => {
+export const updateUserProfile = async (userId, profile) => {
   try {
     const user = await UserModel.findOneAndUpdate({ _id: userId }, {
       $set: {
@@ -109,7 +109,7 @@ const updateUserProfile = async (userId, profile) => {
   }
 };
 
-const activateUserAccount = async (userId) => {
+export const activateUserAccount = async (userId) => {
   try {
     const user = await UserModel.findOneAndUpdate({ _id: userId }, {
       $set: { isActivated: true }
@@ -121,7 +121,7 @@ const activateUserAccount = async (userId) => {
   }
 };
 
-const deleteUserImage = async (userId, image) => {
+export const deleteUserImage = async (userId, image) => {
   try {
     const profile = await UserModel.findOneAndUpdate({ _id: userId }, {
       $pull: {
@@ -135,7 +135,7 @@ const deleteUserImage = async (userId, image) => {
   }
 };
 
-const deleteUserById = async (userId) => {
+export const deleteUserById = async (userId) => {
   try {
     const remove = await UserModel.deleteOne({ _id: userId });
     return remove.ok === 1;
@@ -144,5 +144,3 @@ const deleteUserById = async (userId) => {
     throw err;
   }
 };
-
-export { createUser, authenticateUser, activateUserAccount, checkIfUserExists, getUserEmail, getAllUsersWhere, getAUserWhere, updateUserProfile, deleteUserImage, deleteUserById };

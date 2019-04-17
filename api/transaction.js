@@ -56,12 +56,12 @@ router.get('/:transactionId', tokenParser, async (req, res) => {
 router.post('/', validateTransactionInput, tokenParser, async (req, res) => {
   try {
     const { body: { amount, hookup, purpose }, userId: user } = req;
-    const transaction = await createTransaction(amount, user, hookup, purpose);
-    res.status(200).json(transaction);
+    const { _id: id, user: profile } = await createTransaction(amount, user, hookup, purpose);
+    res.status(200).json({ id, user: profile });
   }
   catch (err) {
     logger.error(err);
-    res.status(400).json('NetworkError: Unable to create a user transaction');
+    res.status(400).json({ message: 'NetworkError: Unable to initiate transaction' });
   }
 });
 
@@ -97,22 +97,22 @@ router.post('/activate/:user', async (req, res) => {
  * @description Verifies a single user transaction
  * @returns {object} A newly created transaction object
  */
-router.post('/verify', async (req, res) => {
+router.post('/verify/:type', async (req, res) => {
   try {
-    const { body } = req;
-    const transaction = await verifyTransaction(body);
+    const { body, params: { type } } = req;
+    const transaction = await verifyTransaction(body, type);
     if (transaction) {
-      res.status(200).json('Activation is Verified');
+      res.status(200).json('Transaction is Verified');
     }
 
     else {
-      res.status(400).json('Activation is not Verified');
+      res.status(400).json('Transaction is not Verified');
     }
 
   }
   catch (err) {
     logger.error(err);
-    res.status(400).json({ message: 'NetworkError: Unable to verify user transaction' });
+    res.status(400).json({ message: 'NetworkError: Unable to verify transaction' });
   }
 });
 

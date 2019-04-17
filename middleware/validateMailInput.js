@@ -8,8 +8,6 @@ export default (req, res, next) => {
    */
   const { name, email, text } = req.body;
 
-  console.log(req.body);
-
   /**
    * @description Tests for data input
    */
