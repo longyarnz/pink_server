@@ -5,7 +5,7 @@
 import paystack from 'paystack';
 import TransactionModel from '../models/transaction';
 import { activateUserAccount } from './userService';
-import sendMailToWorker from './mailService';
+import { sendMailToWorker } from './mailService';
 
 export const createTransaction = async (amount, user, hookup, purpose) => {
   try {
@@ -25,7 +25,7 @@ export const verifyTransaction = async ({ reference, id }, type) => {
     const isSuccessful = transaction.message === 'Verification successful';
     if (isSuccessful){
       const updatedTransaction = await setTransactionSuccess(reference);
-      const sideEffect = type === 'account' ? await activateUserAccount(id) : sendMailToWorker(id);
+      const sideEffect = type === 'account' ? await activateUserAccount(id) : await sendMailToWorker(id);
       return updatedTransaction && sideEffect;
     }
 

@@ -18,18 +18,22 @@ export const createMail = async (name, email, text) => {
   }
 };
 
-export const sendMailToWorker = async (id) => {
+export const sendMailToWorker = async id => {
   try {
     const { username, email } = await getAUserWhere({ _id: id });
     const text = `
-      Hi ${username}.
+Hi ${username}.
 
-      A client has requested for you. Login in to your account at https://test.pinkettu.com.ng.
-    `;
-    const mail = await MailModel.create({ name: username, email, text });
+A client has requested for you. Login in to your account at https://test.pinkettu.com.ng to view your code.
+
+Go to your transactions page to check for your client code.
+
+Have fun!
+    `.trim();
+    await MailModel.create({ name: username, email, text });
     const subject = 'You Have a New Client';
-    sendMail(subject, text, 'support@pinkettu.com.ng', email);
-    return mail.name === username;
+    const feedback = await sendMail(subject, text, 'support@pinkettu.com.ng', 'lekanmedia@gmail.com');
+    return feedback;
   }
   catch (err) {
     throw err;
