@@ -82,11 +82,11 @@ router.put('/:hookupId', tokenParser, activator, async (req, res) => {
   try {
     const { params: { hookupId }, userId: user } = req;
     const hookup = await setHookupAsComplete(user, hookupId);
-    res.status(200).json({ message: hookup });
+    res.status(200).json({ completed: hookup });
   }
   catch (err) {
     logger.error(err); 
-    res.status(400).json('NetworkError: Unable to complete hookup');
+    res.status(400).json({ message: 'NetworkError: Unable to complete hookup' });
   }
 });
 
