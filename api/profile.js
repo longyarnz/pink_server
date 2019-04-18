@@ -19,8 +19,8 @@ const router = express.Router();
 router.get('/', tokenParser, activator, async (req, res) => {
   try {
     const { userId } = req;
-    const { _id, worker, images, email, username, location, rank } = await getAUserWhere({ _id: userId });
-    res.status(200).json({ id: _id, worker, images, email, username, location, rank });
+    const { _id, worker, images, email, username, location, rank, phone } = await getAUserWhere({ _id: userId });
+    res.status(200).json({ id: _id, worker, images, email, username, location, rank, phone });
   }
   catch (err) {
     logger.error(err);
@@ -35,7 +35,7 @@ router.get('/', tokenParser, activator, async (req, res) => {
  */
 router.get('/pinks', async (req, res) => {
   try {
-    const users = await getAllUsersWhere([{ worker: true, isActivated: true }, 'username images rank']);
+    const users = await getAllUsersWhere([{ worker: true, isActivated: true }, 'username phone images rank']);
     res.status(200).json(users);
   }
   catch (err) {
@@ -52,7 +52,7 @@ router.get('/pinks', async (req, res) => {
 router.get('/pinks/:id', async (req, res) => {
   const { params: { id: _id } } = req;
   try {
-    const users = await getAllUsersWhere([{ worker: true, _id, isActivated: true }, 'username images rank']);
+    const users = await getAllUsersWhere([{ worker: true, _id, isActivated: true }, 'username phone images rank']);
     res.status(200).json(users);
   }
   catch (err) {
@@ -69,8 +69,8 @@ router.get('/pinks/:id', async (req, res) => {
 router.put('/', tokenParser, activator, async (req, res) => {
   try {
     const { body: profile, userId } = req;
-    const { worker, images, username, location } = await updateUserProfile(userId, profile);
-    res.status(200).json({ worker, images, username, location });
+    const { worker, images, username, location, phone } = await updateUserProfile(userId, profile);
+    res.status(200).json({ worker, images, username, location, phone });
   }
   catch (err) {
     logger.error(err);

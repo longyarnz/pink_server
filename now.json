@@ -8,6 +8,7 @@
     "MONGODB": "@prod-db",
     "MAIL_PASS": "@mail-pass",
     "HASH": "10",
+    "PAYSTACK": "@paystack_test_key",
     "SERVER_KEY": "function(UUID){return UUID.v4()}"
   },
   "builds": [

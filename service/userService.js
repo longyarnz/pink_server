@@ -36,11 +36,11 @@ export const authenticateUser = async (credentials) => {
  */
 export const createUser = async (credentials) => {
   try {
-    let { email, password, username, worker, location, rank, image } = credentials;
+    let { email, password, username, phone, worker, location, rank, image } = credentials;
     const status = await checkIfUserExists({ email });
     if(status) throw('User Already Exists');
     password = await bcrypt.hashSync(password, HASH);
-    const user = await UserModel.create({ email, password, username, worker, location, rank, images: [ image ] });
+    const user = await UserModel.create({ email, password, username, phone, worker, location, rank, images: [ image ] });
     return typeof user === 'object' ? { isCreated: true, id: user._id } : { isCreated: false, id: null };
   }
   catch (err) {

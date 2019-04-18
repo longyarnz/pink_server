@@ -17,15 +17,16 @@ export const createTransaction = async (amount, user, hookup, purpose) => {
   }
 };
 
-export const verifyTransaction = async ({ reference, id }, type) => {
-  const PaystackAPI = paystack('sk_test_9b5628c00074df50ca6aa875e5d3c32db208a439');
+export const verifyTransaction = async ({ reference, id }, type, userId) => {
+  const PaystackAPI = paystack(process.env.PAYSTACK);
 
   try {
     const transaction = await PaystackAPI.transaction.verify(reference);
     const isSuccessful = transaction.message === 'Verification successful';
+    // const isSuccessful = true;
     if (isSuccessful){
       const updatedTransaction = await setTransactionSuccess(reference);
-      const sideEffect = type === 'account' ? await activateUserAccount(id) : await sendMailToWorker(id);
+      const sideEffect = type === 'account' ? await activateUserAccount(id) : await sendMailToWorker(reference, id, userId);
       return updatedTransaction && sideEffect;
     }
 

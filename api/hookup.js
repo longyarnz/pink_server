@@ -86,7 +86,7 @@ router.put('/:hookupId', tokenParser, activator, async (req, res) => {
   }
   catch (err) {
     logger.error(err); 
-    res.status(400).json({ message: 'NetworkError: Unable to complete hookup' });
+    res.status(400).json('Unable to complete hookup');
   }
 });
 

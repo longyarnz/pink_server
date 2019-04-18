@@ -61,7 +61,7 @@ router.post('/', validateTransactionInput, tokenParser, async (req, res) => {
   }
   catch (err) {
     logger.error(err);
-    res.status(400).json({ message: 'NetworkError: Unable to initiate transaction' });
+    res.status(400).json('NetworkError: Unable to initiate transaction');
   }
 });
 
@@ -73,11 +73,17 @@ router.post('/', validateTransactionInput, tokenParser, async (req, res) => {
 router.post('/activate/:user', async (req, res) => {
   try {
     const { params: { user } } = req;
-    const userHasActivated = await checkIfUserExists({
+    const userExists = await checkIfUserExists({ _id: user });
+
+    const userHasActivated = userExists && await checkIfUserExists({
       _id: user, isActivated: true, worker: true
     });
 
-    if (userHasActivated) {
+    if (!userExists) {
+      res.status(400).json('User does not exists');
+    }
+
+    else if (userHasActivated) {
       res.status(200).json({ status: 'Account is already activated' });
     }
 
@@ -89,7 +95,7 @@ router.post('/activate/:user', async (req, res) => {
   }
   catch (err) {
     logger.error(err);
-    res.status(400).json({ message: 'NetworkError: Unable to create a user transaction' });
+    res.status(400).json('NetworkError: Unable to create a user transaction');
   }
 });
 
@@ -97,10 +103,10 @@ router.post('/activate/:user', async (req, res) => {
  * @description Verifies a single user transaction
  * @returns {object} A newly created transaction object
  */
-router.post('/verify/:type', async (req, res) => {
+router.post('/verify/:type', tokenParser, async (req, res) => {
   try {
-    const { body, params: { type } } = req;
-    const transaction = await verifyTransaction(body, type);
+    const { body, params: { type }, userId } = req;
+    const transaction = await verifyTransaction(body, type, userId);
     if (transaction) {
       res.status(200).json('Transaction is Verified');
     }
@@ -112,7 +118,7 @@ router.post('/verify/:type', async (req, res) => {
   }
   catch (err) {
     logger.error(err);
-    res.status(400).json({ message: 'NetworkError: Unable to verify transaction' });
+    res.status(400).json('NetworkError: Unable to verify transaction');
   }
 });
 

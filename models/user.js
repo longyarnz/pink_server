@@ -12,6 +12,7 @@ const User = new Schema({
   email: String,
   password: String,
   username: String,
+  phone: String,
   location: { type: String, default: 'Lagos Mainland' },
   rank: { type: Number, default: 5 },
   images: [ String ],
