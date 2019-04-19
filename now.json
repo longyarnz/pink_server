@@ -9,7 +9,11 @@
     "MAIL_PASS": "@mail-pass",
     "HASH": "10",
     "PAYSTACK": "@paystack_test_key",
-    "SERVER_KEY": "function(UUID){return UUID.v4()}"
+    "SERVER_KEY": "function(UUID){return UUID.v4()}",
+    "REFRESH_TOKEN": "@refreshtoken",
+    "ACCESS_TOKEN": "@accesstoken",
+    "CLIENT_ID": "@clientid",
+    "CLIENT_SECRET": "@clientsecret"
   },
   "builds": [
     {

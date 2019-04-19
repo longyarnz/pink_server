@@ -25,44 +25,41 @@ export const sendMailToWorker = async (reference, id) => {
     const { username, email } = await getAUserWhere({ _id: id });
     const { phone, email: clientMail, username: client } = await getAUserWhere({ _id: userId });
     const text = `
-Hi ${username}. 
+      <b>Hi ${username}</b>
+      <br /> <br />
+      A client has requested for you. Login in to your account at <b>https://test.pinkettu.com.ng/hookups.html</b> to view your verification code.
+      <br />
+      Any client whose code does not match your code is not valid and authentic.
+      <br /> <br />
+      Your code is: <h1><code>${randomKey}</code></h1>
 
-A client has requested for you. Login in to your account at https://test.pinkettu.com.ng/hookups.html to view your verification code.
-
-Any client whose code does not match your code is not valid and authentic.
-
-Your code is: ${randomKey}
-
-The client's phone number is: ${phone}
-
-The client's email is: ${clientMail}
-
-You should contact the client within the hour to finalize arrangements.
-
-For more information, log in and go to your transactions page.
-
-Have fun!
+      The client's phone number is: <b><code>${phone}</code></b>
+      <br /> <br />
+      The client's email is: <b><code>${clientMail}</code></b>
+      <br /> <br />
+      You should contact the client within the hour to finalize arrangements.
+      For more information, log in and access your hookups page.
+      <br /> <br />
+      Have fun!
     `.trim();
     await MailModel.create({ name: username, email, text });
     const subject = 'You Have a New Client';
     const clientSubject = 'We Are Preparing Your Pink';
     const clientText = `
-Hi ${client}.
+      <b>Hi ${client}</b>
+      <br /> <br />
+      Your contact details have been forwarded to your pink.
+      Your authentication code is: <h1><code>${randomKey}</code></h1>
 
-Your contact details have been forwarded to your pink.
-
-Your authentication code is: ${randomKey}
-
-Your pink will have a copy of this code. If the code matches, your hookup is authenticated.
-
-Your pink will contact you shortly to finalize arrangements.
-
-For more information, log in and go to your transactions page.
-
-Thank you for using our service.
+      Your pink will have a copy of this code. If the code matches, your hookup is authenticated.
+      Your pink will contact you shortly to finalize arrangements.
+      <br />
+      For more information, log in to your account and open: <b>https://test.pinkettu.com.ng/hookups.html</b>
+      <br /> <br />
+      Thank you for using our service.
     `;
-    const feedback = await sendMail(subject, text, 'Pinkettung@gmail.com', email)
-      && await sendMail(clientSubject, clientText, 'Pinkettung@gmail.com', clientMail);
+    const feedback = await sendMail(subject, text, `${'Pink et Tu'} <pinkettung@gmail.com>`, email)
+      && await sendMail(clientSubject, clientText, `${'Pink et Tu'} <pinkettung@gmail.com>`, clientMail);
     
     return feedback;
   }

@@ -10,3 +10,4 @@ php/
 *.zip
 *.log
 .env
+secret.json

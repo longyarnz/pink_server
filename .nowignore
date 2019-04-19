@@ -9,3 +9,4 @@ pinketu-master/
 *.zip
 *.log
 .env
+secret.json
