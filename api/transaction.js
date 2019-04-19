@@ -103,7 +103,7 @@ router.post('/activate/:user', async (req, res) => {
  * @description Verifies a single user transaction
  * @returns {object} A newly created transaction object
  */
-router.post('/verify/:type', tokenParser, async (req, res) => {
+router.post('/verify/:type', async (req, res) => {
   try {
     const { body, params: { type }, userId } = req;
     const transaction = await verifyTransaction(body, type, userId);
