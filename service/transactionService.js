@@ -17,7 +17,7 @@ export const createTransaction = async (amount, user, hookup, purpose) => {
   }
 };
 
-export const verifyTransaction = async ({ reference, id }, type, userId) => {
+export const verifyTransaction = async ({ reference, id }, type) => {
   const PaystackAPI = paystack(process.env.PAYSTACK);
 
   try {
@@ -26,7 +26,7 @@ export const verifyTransaction = async ({ reference, id }, type, userId) => {
     // const isSuccessful = true;
     if (isSuccessful){
       const updatedTransaction = await setTransactionSuccess(reference);
-      const sideEffect = type === 'account' ? await activateUserAccount(id) : await sendMailToWorker(reference, id, userId);
+      const sideEffect = type === 'account' ? await activateUserAccount(id) : await sendMailToWorker(reference, id);
       return updatedTransaction && sideEffect;
     }
 

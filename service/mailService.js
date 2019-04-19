@@ -5,7 +5,7 @@
 import MailModel from '../models/mail';
 import sendMail from '../connection/mail';
 import { getAUserWhere } from './userService';
-import { getAUserHookup } from './hookupService';
+import { getAHookupWhere } from './hookupService';
 
 export const createMail = async (name, email, text) => {
   try {
@@ -19,15 +19,15 @@ export const createMail = async (name, email, text) => {
   }
 };
 
-export const sendMailToWorker = async (reference, id, userId) => {
+export const sendMailToWorker = async (reference, id) => {
   try {
+    const { client: { _id: userId }, randomKey } = await getAHookupWhere({ _id: reference }, 'client randomKey');
     const { username, email } = await getAUserWhere({ _id: id });
     const { phone, email: clientMail, username: client } = await getAUserWhere({ _id: userId });
-    const { randomKey } = await getAUserHookup(userId, reference);
     const text = `
-Hi ${username}.
+Hi ${username}. 
 
-A client has requested for you. Login in to your account at https://test.pinkettu.com.ng to view your verification code.
+A client has requested for you. Login in to your account at https://test.pinkettu.com.ng/hookups.html to view your verification code.
 
 Any client whose code does not match your code is not valid and authentic.
 

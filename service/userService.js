@@ -94,6 +94,7 @@ export const updateUserProfile = async (userId, profile) => {
       $set: {
         username: profile.username,
         location: profile.location,
+        phone: profile.phone,
       },
       $push: {
         images: {

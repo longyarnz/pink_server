@@ -105,8 +105,8 @@ router.post('/activate/:user', async (req, res) => {
  */
 router.post('/verify/:type', async (req, res) => {
   try {
-    const { body, params: { type }, userId } = req;
-    const transaction = await verifyTransaction(body, type, userId);
+    const { body, params: { type } } = req;
+    const transaction = await verifyTransaction(body, type);
     if (transaction) {
       res.status(200).json('Transaction is Verified');
     }

@@ -28,7 +28,6 @@ let SERVER_KEY = new Function(`
 router.post('/signup', validateInput, async (req, res) => {
   try {
     const { email, password, username, worker, location, image, phone } = req.body;
-    console.log(req.body);
     const user = await createUser({ email, password, username, worker, location, image, phone });
 
     if (user.isCreated) {
