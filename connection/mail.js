@@ -29,12 +29,12 @@ export default async function sendMail(subject, text, from, to = 'pinkettung@gma
   };
 
   return new Promise(resolve => {
-    transporter.sendMail(mailOptions, function (error, info) {
+    transporter.sendMail(mailOptions, function (error) {
       if (error) {
         console.log(error);
         rejects(false);
       } else {
-        console.log(`Email sent: ${JSON.stringify(info)}`);
+        // console.log(`Email sent: ${JSON.stringify(info)}`);
         resolve(true);
       }
       transporter.close();

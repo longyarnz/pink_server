@@ -4,9 +4,9 @@
  */
 import HookupModel from '../models/hookup';
 
-export const createHookup = async (worker, client, randomKey) => {
+export const createHookup = async (worker, client, randomKey, workerKey, clientKey) => {
   try {
-    const hookup = await HookupModel.create({ worker, client, randomKey });
+    const hookup = await HookupModel.create({ worker, client, randomKey, workerKey, clientKey });
     return hookup;
   }
   catch (err) {
@@ -28,7 +28,7 @@ export const getAHookupWhere = async (query) => {
 
 export const getAllUserHookups = async (query) => {
   try {
-    const hookup = await HookupModel.find(query)
+    const hookup = await HookupModel.find(...query)
       .populate('worker', 'username')
       .populate('client', 'username');
     return hookup;
@@ -53,10 +53,14 @@ export const getAUserHookup = async (userId, hookupId) => {
   }
 };
 
-export const setHookupAsComplete = async (user, hookupId) => {
+export const setHookupAsComplete = async (userId, hookupId, code) => {
   try {
-    const hookup = await HookupModel.findOneAndUpdate({ _id: hookupId, client: user }, { completed: true }, { new: true });
-    return hookup.completed ? 'Hookup is completed' : 'Unable to complete hookup';
+    let { client, worker, clientKey, workerKey, clientHasVerified, workerHasVerified } = await HookupModel.findOne({ _id: hookupId });
+    if (client === userId) clientHasVerified = code === workerKey;
+    else if (worker === userId) workerHasVerified = code === clientKey;
+    const hookup = await HookupModel.findOneAndUpdate({ _id: hookupId }, { clientHasVerified, workerHasVerified }, { new: true });
+    return (client === userId && [hookup.clientHasVerified, hookup.workerHasVerified])
+      || (worker === userId && [hookup.workerHasVerified, hookup.clientHasVerified]);
   }
   catch (err) {
     throw err;

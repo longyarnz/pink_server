@@ -21,41 +21,45 @@ export const createMail = async (name, email, text) => {
 
 export const sendMailToWorker = async (reference, id) => {
   try {
-    const { client: { _id: userId }, randomKey } = await getAHookupWhere({ _id: reference }, 'client randomKey');
+    const { client: { _id: userId }, randomKey, clientKey, workerKey } = await getAHookupWhere({ _id: reference }, 'client randomKey');
     const { username, email } = await getAUserWhere({ _id: id });
     const { phone, email: clientMail, username: client } = await getAUserWhere({ _id: userId });
     const text = `
       <b>Hi ${username}</b>
       <br /> <br />
-      A client has requested for you. Login in to your account at <b>https://test.pinkettu.com.ng/hookups.html</b> to view your verification code.
-      <br />
-      Any client whose code does not match your code is not valid and authentic.
+      A client has requested for you. Log in to your <a href="https://test.pinkettu.com.ng/hookups.html"><b>account</b></a> to view your verification code.
+      Any client whose hookup-code does not match your code is not valid and authentic.
       <br /> <br />
-      Your code is: <h1><code>${randomKey}</code></h1>
 
-      The client's phone number is: <b><code>${phone}</code></b>
-      <br /> <br />
-      The client's email is: <b><code>${clientMail}</code></b>
-      <br /> <br />
+      Your <b>Hook-Up Code</b> is: <h1><code>${randomKey}</code></h1>
+
+      Your <b>Secret Code</b> is: <h1><code>${workerKey}</code></h1>
+
+      The client's phone number is: <h1><code>${phone}</code></h1>
+
+      The client's email is: <h1><code>${clientMail}</code></h1>
+
+      Share your secret code with your client for verification.
       You should contact the client within the hour to finalize arrangements.
       For more information, log in and access your hookups page.
       <br /> <br />
+
       Have fun!
     `.trim();
     await MailModel.create({ name: username, email, text });
     const subject = 'You Have a New Client';
-    const clientSubject = 'We Are Preparing Your Pink';
+    const clientSubject = 'Hook-Up Activation';
     const clientText = `
       <b>Hi ${client}</b>
       <br /> <br />
       Your contact details have been forwarded to your pink.
-      Your authentication code is: <h1><code>${randomKey}</code></h1>
+      Your <b>Hook-Up Code</b> is: <h1><code>${randomKey}</code></h1>
 
-      Your pink will have a copy of this code. If the code matches, your hookup is authenticated.
-      Your pink will contact you shortly to finalize arrangements.
-      <br />
-      For more information, log in to your account and open: <b>https://test.pinkettu.com.ng/hookups.html</b>
+      Your <b>Secret Code</b> is: <h1><code>${clientKey}</code></h1>
+
+      Share your secret code with your pink for verification. For more info log in to your <a href="https://test.pinkettu.com.ng/hookups.html"><b>account</b></a>.
       <br /> <br />
+      
       Thank you for using our service.
     `;
     const feedback = await sendMail(subject, text, `${'Pink et Tu'} <pinkettung@gmail.com>`, email)

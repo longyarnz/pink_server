@@ -19,12 +19,12 @@ const router = express.Router();
 router.get('/', tokenParser, activator, async (req, res) => {
   try {
     const { userId } = req;
-    const hookup = await getAllUserHookups({
+    let hookups = await getAllUserHookups([{
       $or: [
         { worker: userId }, { client: userId }
       ]
-    });
-    res.status(200).json(hookup);
+    }, '_id clientHasVerified workerHasVerified randomKey worker client']);
+    res.status(200).json(hookups);
   }
   catch (err) {
     logger.error(err); 
@@ -40,8 +40,8 @@ router.get('/', tokenParser, activator, async (req, res) => {
 router.get('/:hookupId', tokenParser, activator, async (req, res) => {
   try {
     const { params: { hookupId }, userId } = req;
-    const hookup = await getAUserHookup(userId, hookupId);
-    res.status(200).json(hookup);
+    let { _id, clientHasVerified, workerHasVerified, randomKey, worker, client } = await getAUserHookup(userId, { _id, hookupId });
+    res.status(200).json({ _id, clientHasVerified, workerHasVerified, randomKey, worker, client });
   }
   catch (err) {
     logger.error(err); 
@@ -59,9 +59,11 @@ router.post('/', tokenParser, async (req, res) => {
     const { body: { worker }, userId: client } = req;
     const alpha = 'JKHIHGFKUEIUFISHDFSHKDKPOWPCMZAXQYWIOZLBKDKSGKFBSDKFKJDFVKABNKJNNSOOJPAOISHDOSA';
     const random = i => Math.ceil(Math.random() * i);
-    const randomKey = `${alpha.charAt(random(78))}${alpha.charAt(random(78))}-${random(999999)}`;
-
-    const hookup = await createHookup(worker, client, randomKey);
+    const genKey = () => `${alpha.charAt(random(78))}${alpha.charAt(random(78))}${random(999999)}`;
+    const randomKey = genKey();
+    const clientKey = genKey();
+    const workerKey = genKey();
+    const hookup = await createHookup(worker, client, randomKey, workerKey, clientKey);
     const { _id: id } = hookup;
 
     res.status(200).json({ id, randomKey });
@@ -78,11 +80,11 @@ router.post('/', tokenParser, async (req, res) => {
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {Response} JSON
  */
-router.put('/:hookupId', tokenParser, activator, async (req, res) => {
+router.put('/:hookupId/:code', tokenParser, activator, async (req, res) => {
   try {
-    const { params: { hookupId }, userId: user } = req;
-    const hookup = await setHookupAsComplete(user, hookupId);
-    res.status(200).json({ completed: hookup });
+    const { params: { hookupId, code }, userId } = req;
+    const hookupStatus = await setHookupAsComplete(userId, hookupId, code);
+    res.status(200).json(hookupStatus);
   }
   catch (err) {
     logger.error(err); 

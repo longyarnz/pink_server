@@ -99,7 +99,8 @@ router.post('/login', validateLoginInput, async (req, res) => {
   }
 
   catch (err) {
-    logger.error(err); res.status(400).json(err.message);
+    logger.error(err);
+    res.status(400).json(err);
   }
 });
 
