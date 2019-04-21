@@ -114,7 +114,6 @@ router.post('/verify/:type', async (req, res) => {
     else {
       res.status(400).json('Transaction is not Verified');
     }
-
   }
   catch (err) {
     logger.error(err);

@@ -14,6 +14,7 @@ const User = new Schema({
   username: String,
   phone: String,
   location: { type: String, default: 'Lagos Mainland' },
+  rates: [{ type: Number, default: 10000 }],
   rank: { type: Number, default: 5 },
   images: [ String ],
   date_created: { type: Date, default: Date.now }

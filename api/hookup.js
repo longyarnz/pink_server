@@ -56,14 +56,14 @@ router.get('/:hookupId', tokenParser, activator, async (req, res) => {
  */
 router.post('/', tokenParser, async (req, res) => {
   try {
-    const { body: { worker }, userId: client } = req;
+    const { body: { worker, cost }, userId: client } = req;
     const alpha = 'JKHIHGFKUEIUFISHDFSHKDKPOWPCMZAXQYWIOZLBKDKSGKFBSDKFKJDFVKABNKJNNSOOJPAOISHDOSA';
     const random = i => Math.ceil(Math.random() * i);
     const genKey = () => `${alpha.charAt(random(78))}${alpha.charAt(random(78))}${random(999999)}`;
     const randomKey = genKey();
     const clientKey = genKey();
     const workerKey = genKey();
-    const hookup = await createHookup(worker, client, randomKey, workerKey, clientKey);
+    const hookup = await createHookup(worker, client, randomKey, workerKey, clientKey, cost);
     const { _id: id } = hookup;
 
     res.status(200).json({ id, randomKey });

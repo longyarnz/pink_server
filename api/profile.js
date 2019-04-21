@@ -12,15 +12,16 @@ import {
 const router = express.Router();
 
 /**
- * @description Gets a user profile
+ * @description Gets a Pink profile
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {Response} JSON
  */
 router.get('/', tokenParser, activator, async (req, res) => {
   try {
     const { userId } = req;
-    const { _id, worker, images, email, username, location, rank, phone } = await getAUserWhere({ _id: userId });
-    res.status(200).json({ id: _id, worker, images, email, username, location, rank, phone });
+    const user = await getAUserWhere([{ _id: userId }]);
+    user.id = user._id;
+    res.status(200).json(user);
   }
   catch (err) {
     logger.error(err);
@@ -29,13 +30,31 @@ router.get('/', tokenParser, activator, async (req, res) => {
 });
 
 /**
- * @description Gets a user profile
+ * @description Get Pink Profiles
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {Response} JSON
  */
 router.get('/pinks', async (req, res) => {
   try {
-    const users = await getAllUsersWhere([{ worker: true, isActivated: true }, 'username phone images rank']);
+    const users = await getAllUsersWhere([{ worker: true, isActivated: true }, 'username phone images rank rates']);
+    res.status(200).json(users);
+  }
+  catch (err) {
+    logger.error(err);
+    res.status(400).json('NetworkError: Unable to get user profile');
+  }
+});
+
+/**
+ * @description Get Pink Profiles
+ * @param {middleware} tokenParser - Extracts userId from token
+ * @returns {Response} JSON
+ */
+router.get('/pinks/limit/:limit', async (req, res) => {
+  try {
+    let { params: {limit} } = req;
+    limit = parseInt(limit);
+    const users = await getAllUsersWhere([{ worker: true, isActivated: true }, 'username phone images rank rates', { limit }]);
     res.status(200).json(users);
   }
   catch (err) {
@@ -52,7 +71,7 @@ router.get('/pinks', async (req, res) => {
 router.get('/pinks/:id', async (req, res) => {
   const { params: { id: _id } } = req;
   try {
-    const users = await getAllUsersWhere([{ worker: true, _id, isActivated: true }, 'username phone images rank']);
+    const users = await getAUserWhere([{ worker: true, _id, isActivated: true }, 'username phone images rank rates']);
     res.status(200).json(users);
   }
   catch (err) {
@@ -69,8 +88,8 @@ router.get('/pinks/:id', async (req, res) => {
 router.put('/', tokenParser, activator, async (req, res) => {
   try {
     const { body: profile, userId } = req;
-    const { worker, images, username, location, phone } = await updateUserProfile(userId, profile);
-    res.status(200).json({ worker, images, username, location, phone });
+    const { worker, images, username, rates, location, phone } = await updateUserProfile(userId, profile);
+    res.status(200).json({ worker, images, username, rates, location, phone });
   }
   catch (err) {
     logger.error(err);

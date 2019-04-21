@@ -15,6 +15,7 @@ const Hookup = new Schema({
   client: { type: String, ref: 'User' },
   worker: { type: String, ref: 'User' },
   rank: { type: Number, default: 0 },
+  cost: { type: Number, default: 0 },
   date_created: { type: Date, default: Date.now }
 });
 

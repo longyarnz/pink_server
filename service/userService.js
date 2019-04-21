@@ -70,7 +70,7 @@ export const getAllUsersWhere = async (query) => {
 
 export const getAUserWhere = async (query) => {
   try {
-    const user = await UserModel.findOne(query);
+    const user = await UserModel.findOne(...query);
     return user;
   }
   catch (err) {
@@ -89,12 +89,14 @@ export const getUserEmail =  async (userId) => {
 };
 
 export const updateUserProfile = async (userId, profile) => {
+  console.log(profile.rates);
   try {
     const user = await UserModel.findOneAndUpdate({ _id: userId }, {
       $set: {
         username: profile.username,
         location: profile.location,
         phone: profile.phone,
+        rates: profile.rates
       },
       $push: {
         images: {
