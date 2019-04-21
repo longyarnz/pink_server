@@ -54,7 +54,19 @@ router.post('/login', validateLoginInput, async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await authenticateUser({ email, password });
+    let user = await checkIfUserExists({ email });
+    
+    if (!user) {
+      const message = {
+        text: 'You have not registered!',
+        token: false
+      };
+      
+      res.status(200).json(message);
+      return;
+    }
+    
+    user = await authenticateUser({ email, password });
     const userHasActivated = await checkIfUserExists({
       $or: [
         { email, isActivated: true, worker: true }, 

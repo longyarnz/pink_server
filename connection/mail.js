@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { rejects } from 'assert';
+import logger from '../middleware/logger';
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -29,15 +30,22 @@ export default async function sendMail(subject, text, from, to = 'pinkettung@gma
   };
 
   return new Promise(resolve => {
-    transporter.sendMail(mailOptions, function (error) {
-      if (error) {
-        console.log(error);
-        rejects(false);
-      } else {
-        // console.log(`Email sent: ${JSON.stringify(info)}`);
-        resolve(true);
-      }
-      transporter.close();
-    });
+    try {
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+          logger.error(error);
+          rejects(false);
+        } else {
+          logger.info(`Email sent: ${JSON.stringify(info)}`);
+          resolve(true);
+        }
+        transporter.close();
+      });
+    }
+    catch (err) {
+      logger.error(err);
+      throw err;
+    }
   });
 }

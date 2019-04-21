@@ -51,8 +51,8 @@ router.get('/:mailId', tokenParser, async (req, res) => {
  */
 router.post('/', validateMailInput, async (req, res) => {
   try {
-    const { body: { email, name, text } } = req;
-    const mail = await createMail(name, email, text);
+    const { body: { email, purpose = 'Enquiry', name = 'Pinkettu Visitor', text } } = req;
+    const mail = await createMail(name, email, purpose, text);
     res.status(200).json(mail);
   }
   catch (err) {

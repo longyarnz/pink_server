@@ -9,7 +9,8 @@ const Schema = mongoose.Schema;
 const Mail = new Schema({
   name: String,
   email: String,
-  message: String,
+  text: String,
+  purpose: String,
   date_created: { type: Date, default: Date.now },
 });
 

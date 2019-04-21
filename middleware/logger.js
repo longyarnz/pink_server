@@ -10,8 +10,9 @@ const { combine, timestamp, printf } = format;
  * @constant {string} Format - This is the format fo logs piped into info.log
  */
 const myFormat = printf(info => `
-  ${info.timestamp} ${info.level}: ${info.message}
-  ${info.stack}
+${info.timestamp} 
+  ${info.level}: ${info.message}
+  ${info.stack ? info.stack : ''}
 `);
 
 /**
@@ -25,6 +26,7 @@ export default createLogger({
     myFormat
   ),
   transports: [
-    new transports.File({filename: 'info.log', level: 'error'})
+    new transports.File({filename: 'error.log', level: 'error'}),
+    new transports.File({filename: 'info.log', level: 'info'}),
   ],
 });

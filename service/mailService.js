@@ -7,11 +7,11 @@ import sendMail from '../connection/mail';
 import { getAUserWhere } from './userService';
 import { getAHookupWhere } from './hookupService';
 
-export const createMail = async (name, email, text) => {
+export const createMail = async (name, email, purpose, text) => {
   try {
-    const mail = await MailModel.create({ name, email, text });
-    const subject = `${name} Contacted You!`;
-    sendMail(subject, text, email);
+    const mail = await MailModel.create({ name, email, text, purpose });
+    const from = `${mail.name} <${mail.email}>`;
+    await sendMail(`${mail.purpose} From <${mail.email}>`, mail.text, from);
     return mail;
   }
   catch (err) {
@@ -46,7 +46,7 @@ export const sendMailToWorker = async (reference, id) => {
 
       Have fun!
     `.trim();
-    await MailModel.create({ name: username, email, text });
+    await MailModel.create({ name: username, email, text, purpose: 'Pink Notification' });
     const subject = 'You Have a New Client';
     const clientSubject = 'Hook-Up Activation';
     const clientText = `
