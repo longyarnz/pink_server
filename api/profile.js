@@ -12,7 +12,7 @@ import {
 const router = express.Router();
 
 /**
- * @description Gets a Pink profile
+ * @description Gets a user profile
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {Response} JSON
  */
@@ -71,8 +71,25 @@ router.get('/pinks/limit/:limit', async (req, res) => {
 router.get('/pinks/:id', async (req, res) => {
   const { params: { id: _id } } = req;
   try {
-    const users = await getAUserWhere([{ worker: true, _id, isActivated: true }, 'username phone images rank rates']);
-    res.status(200).json(users);
+    const user = await getAUserWhere([{ worker: true, _id, isActivated: true }, 'username phone images rank rates worker']);
+    res.status(200).json(user);
+  }
+  catch (err) {
+    logger.error(err);
+    res.status(400).json('NetworkError: Unable to get user profile');
+  }
+});
+
+/**
+ * @description Gets a user profile
+ * @param {middleware} tokenParser - Extracts userId from token
+ * @returns {Response} JSON
+ */
+router.get('/clients/:id', async (req, res) => {
+  const { params: { id: _id } } = req;
+  try {
+    const user = await getAUserWhere([{ worker: false, _id }, 'username images worker']);
+    res.status(200).json(user);
   }
   catch (err) {
     logger.error(err);
