@@ -31,7 +31,25 @@ router.post('/signup', validateInput, async (req, res) => {
     const user = await createUser({ email, password, username, worker, location, image, phone });
 
     if (user.isCreated) {
-      res.redirect(307, '/auth/login');
+      if (!worker) {
+        JWT.sign({ id: user.id }, SERVER_KEY, (err, token) => {
+          if (err) res.status(400).json('Server is currently unavailable');
+
+          const message = {
+            text: 'User log-in successful',
+            token
+          };
+
+          res.status(200).json(message);
+        });
+      }
+
+      else {
+        res.status(400).json({
+          id: user.id,
+          message: 'User has not activated the account'
+        });
+      }
     }
 
     else {
@@ -75,9 +93,6 @@ router.post('/login', validateLoginInput, async (req, res) => {
     });
 
     if (userHasActivated && user.isValid) {
-      /**
-       * @description Creates JWT token from the email and password
-       */
       JWT.sign({ id: user.id }, SERVER_KEY, (err, token) => {
         if (err) res.status(400).json('Server is currently unavailable');
 
@@ -86,9 +101,6 @@ router.post('/login', validateLoginInput, async (req, res) => {
           token
         };
 
-        /**
-         * @description Returns user token
-         */
         res.status(200).json(message);
       });
     }
