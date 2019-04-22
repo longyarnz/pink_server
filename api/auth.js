@@ -57,7 +57,7 @@ router.post('/signup', validateInput, async (req, res) => {
     }
   }
   catch (err) {
-    logger.error(err); 
+    logger.error(err);
     res.status(400).json(err);
   }
 });
@@ -73,52 +73,53 @@ router.post('/login', validateLoginInput, async (req, res) => {
 
   try {
     let user = await checkIfUserExists({ email });
-    
+
     if (!user) {
       const message = {
         text: 'You have not registered!',
         token: false
       };
-      
+
       res.status(200).json(message);
-      return;
-    }
-    
-    user = await authenticateUser({ email, password });
-    const userHasActivated = await checkIfUserExists({
-      $or: [
-        { email, isActivated: true, worker: true }, 
-        { email, worker: false }
-      ]
-    });
-
-    if (userHasActivated && user.isValid) {
-      JWT.sign({ id: user.id }, SERVER_KEY, (err, token) => {
-        if (err) res.status(400).json('Server is currently unavailable');
-
-        const message = {
-          text: 'User log-in successful',
-          token
-        };
-
-        res.status(200).json(message);
-      });
-    }
-
-    else if(!userHasActivated) {
-      res.status(400).json({
-        id: user.id,
-        message: 'User has not activated the account'
-      });
     }
 
     else {
-      const message = {
-        text: 'Email and password does not match',
-        token: false
-      };
+      user = await authenticateUser({ email, password });
+      const userHasActivated = await checkIfUserExists({
+        $or: [
+          { email, isActivated: true, worker: true },
+          { email, worker: false }
+        ]
+      });
 
-      res.status(200).json(message);
+      if (user.isValid && userHasActivated) {
+        JWT.sign({ id: user.id }, SERVER_KEY, (err, token) => {
+          if (err) throw err;
+
+          const message = {
+            text: 'User log-in successful',
+            token
+          };
+
+          res.status(200).json(message);
+        });
+      }
+
+      else if (!userHasActivated) {
+        res.status(400).json({
+          id: user.id,
+          message: 'User has not activated the account'
+        });
+      }
+
+      else {
+        const message = {
+          text: 'Email and password does not match',
+          token: false
+        };
+
+        res.status(200).json(message);
+      }
     }
   }
 
@@ -134,9 +135,8 @@ router.post('/login', validateLoginInput, async (req, res) => {
  * @returns {Response} JSON
  */
 router.get('/logout', tokenParser, (req, res) => {
-  SERVER_KEY = UUID.v4();
   res.header['authorization'] = '';
-  res.json({ message: 'User is logged out'});
+  res.json({ message: 'User is logged out' });
 });
 
 export { SERVER_KEY };

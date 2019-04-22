@@ -51,7 +51,7 @@ export const createUser = async (credentials) => {
 export const checkIfUserExists = async (query) => {
   try{
     const user = await UserModel.findOne(query);
-    return user === null ? false : true;
+    return !user ? false : true;
   }
   catch (err) {
     throw err;
@@ -89,7 +89,6 @@ export const getUserEmail =  async (userId) => {
 };
 
 export const updateUserProfile = async (userId, profile) => {
-  console.log(profile.rates);
   try {
     const user = await UserModel.findOneAndUpdate({ _id: userId }, {
       $set: {
