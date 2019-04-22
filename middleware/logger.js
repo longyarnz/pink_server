@@ -12,7 +12,7 @@ const { combine, timestamp, printf } = format;
 const myFormat = printf(info => `
 ${info.timestamp} 
   ${info.level}: ${info.message}
-  ${info.stack ? info.stack : ''}
+  ${info.stack}
 `);
 
 /**

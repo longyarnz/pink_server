@@ -29,13 +29,13 @@ export default async function sendMail(subject, text, from, to = 'pinkettung@gma
     generateTextFromHTML: true
   };
 
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     try {
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
           console.log(error);
           logger.error(error);
-          rejects(false);
+          reject(false);
         } else {
           logger.info(`Email sent: ${JSON.stringify(info)}`);
           resolve(true);
