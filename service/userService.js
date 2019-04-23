@@ -111,6 +111,20 @@ export const updateUserProfile = async (userId, profile) => {
   }
 };
 
+export const verifyUserProfile = async (userId) => {
+  try {
+    const user = await UserModel.findOneAndUpdate({ _id: userId }, {
+      $set: {
+        emailIsVerified: true
+      }
+    }, { new: true, upsert: true });
+    return user.emailIsVerified;
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
 export const activateUserAccount = async (userId) => {
   try {
     const user = await UserModel.findOneAndUpdate({ _id: userId }, {

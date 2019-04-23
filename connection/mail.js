@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-import { rejects } from 'assert';
 import logger from '../middleware/logger';
 
 const transporter = nodemailer.createTransport({
@@ -33,7 +32,6 @@ export default async function sendMail(subject, text, from, to = 'pinkettung@gma
     try {
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-          console.log(error);
           logger.error(error);
           reject(false);
         } else {

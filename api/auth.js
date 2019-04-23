@@ -6,11 +6,12 @@ import express from 'express';
 import 'babel-polyfill';
 import JWT from 'jsonwebtoken';
 import UUID from 'uuid';
-import { authenticateUser, createUser, checkIfUserExists } from '../service/userService';
+import { authenticateUser, createUser, checkIfUserExists, getAUserWhere } from '../service/userService';
 import validateInput from '../middleware/validateInput';
 import validateLoginInput from '../middleware/validateLoginInput';
 import tokenParser from '../middleware/tokenParser';
 import logger from '../middleware/logger';
+import sendMail from '../connection/mail';
 
 const router = express.Router();
 
@@ -31,13 +32,29 @@ router.post('/signup', validateInput, async (req, res) => {
     const user = await createUser({ email, password, username, worker, location, image, phone });
 
     if (user.isCreated) {
+      const subject = 'Verify Your Pink et Tu Account';
+      const text = `
+        Hi there.
+        <br /> <br />
+        We have registered your account at <a href="https://test.pinkettu.com.ng">pinkettu.com.ng</a>. Click the button below to verify your email address.
+        <br /> <br />
+        <div style="text-align: center; margin: 20px auto">
+          <a style="padding: 10px 20px; background-color: #000; color: #fff; font-weight: bold" href="https://api.pinkettu.com.ng/profile/${user.id}/verify"><code>VERIFY</code></a>
+        </div>
+        <br /> <br />
+        You got this email but you did not register at Pinkettu? please ignore it.
+        <br /> <br />
+        Thank You.
+      `;
+      await sendMail(subject, text, 'Pink et Tu <pinkettung@gmail.com>', email);
+
       if (!worker) {
         JWT.sign({ id: user.id }, SERVER_KEY, (err, token) => {
           if (err) res.status(400).json('Server is currently unavailable');
 
           const message = {
             text: 'User log-in successful',
-            token
+            token, worker
           };
 
           res.status(200).json(message);
@@ -47,6 +64,7 @@ router.post('/signup', validateInput, async (req, res) => {
       else {
         res.status(400).json({
           id: user.id,
+          email: email,
           message: 'User has not activated the account'
         });
       }
@@ -93,12 +111,13 @@ router.post('/login', validateLoginInput, async (req, res) => {
       });
 
       if (user.isValid && userHasActivated) {
+        const { worker } = await getAUserWhere([{ email }]);
         JWT.sign({ id: user.id }, SERVER_KEY, (err, token) => {
           if (err) throw err;
 
           const message = {
             text: 'User log-in successful',
-            token
+            token, worker
           };
 
           res.status(200).json(message);
@@ -108,6 +127,7 @@ router.post('/login', validateLoginInput, async (req, res) => {
       else if (!userHasActivated) {
         res.status(400).json({
           id: user.id,
+          email: email,
           message: 'User has not activated the account'
         });
       }
