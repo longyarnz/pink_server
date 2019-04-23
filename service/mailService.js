@@ -58,7 +58,7 @@ export const sendMailToWorker = async (reference, id) => {
 
       Your <b>Secret Code</b> is: <h1><code>${clientKey}</code></h1>
 
-      Share your secret code with your pink for verification. For more info log in to your <a href="https://test.pinkettu.com.ng/hookups.html"><b>account</b></a>.
+      Share your secret code with your pink for verification. For more info log in to your <a href="https://pinkettu.com.ng/hookups.html"><b>account</b></a>.
       <br /> <br />
       
       Thank you for using our service.

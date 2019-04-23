@@ -7,6 +7,5 @@ pinketu-master/
 
 # Files
 *.zip
-*.log
 .env
 secret.json

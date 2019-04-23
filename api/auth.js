@@ -36,7 +36,7 @@ router.post('/signup', validateInput, async (req, res) => {
       const text = `
         Hi there.
         <br /> <br />
-        We have registered your account at <a href="https://test.pinkettu.com.ng">pinkettu.com.ng</a>. Click the button below to verify your email address.
+        We have registered your account at <a href="https://pinkettu.com.ng">pinkettu.com.ng</a>. Click the button below to verify your email address.
         <br /> <br />
         <div style="text-align: center; margin: 20px auto">
           <a style="padding: 10px 20px; background-color: #000; color: #fff; font-weight: bold" href="https://api.pinkettu.com.ng/profile/${user.id}/verify"><code>VERIFY</code></a>
