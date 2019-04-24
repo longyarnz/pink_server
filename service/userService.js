@@ -95,7 +95,8 @@ export const updateUserProfile = async (userId, profile) => {
         username: profile.username,
         location: profile.location,
         phone: profile.phone,
-        rates: profile.rates
+        rates: profile.rates,
+        orientation: profile.orientation
       },
       $push: {
         images: {

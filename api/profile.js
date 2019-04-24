@@ -11,6 +11,8 @@ import {
 } from '../service/userService';
 const router = express.Router();
 
+const userFields = ['username', 'phone', 'images', 'rank', 'rates', 'worker', 'location', 'email', 'emailIsVerified', 'orientation'];
+
 /**
  * @description Gets a user profile
  * @param {middleware} tokenParser - Extracts userId from token
@@ -19,7 +21,7 @@ const router = express.Router();
 router.get('/', tokenParser, activator, async (req, res) => {
   try {
     const { userId } = req;
-    const user = await getAUserWhere([{ _id: userId }, 'username phone images rank rates worker location email emailIsVerified']);
+    const user = await getAUserWhere([{ _id: userId }, userFields.join(' ')]);
     user.id = user._id;
     res.status(200).json(user);
   }
@@ -36,7 +38,7 @@ router.get('/', tokenParser, activator, async (req, res) => {
  */
 router.get('/pinks', async (req, res) => {
   try {
-    const users = await getAllUsersWhere([{ worker: true, isActivated: true }, 'username phone images rank rates location email emailIsVerified']);
+    const users = await getAllUsersWhere([{ worker: true, isActivated: true }, userFields.join(' ')]);
     res.status(200).json(users);
   }
   catch (err) {
@@ -52,9 +54,9 @@ router.get('/pinks', async (req, res) => {
  */
 router.get('/pinks/limit/:limit', async (req, res) => {
   try {
-    let { params: {limit} } = req;
+    let { params: { limit } } = req;
     limit = parseInt(limit);
-    const users = await getAllUsersWhere([{ worker: true, isActivated: true }, 'username phone images rank rates location email emailIsVerified', { limit }]);
+    const users = await getAllUsersWhere([{ worker: true, isActivated: true }, userFields.join(' '), { limit }]);
     res.status(200).json(users);
   }
   catch (err) {
@@ -71,7 +73,7 @@ router.get('/pinks/limit/:limit', async (req, res) => {
 router.get('/pinks/:id', async (req, res) => {
   const { params: { id: _id } } = req;
   try {
-    const user = await getAUserWhere([{ worker: true, _id, isActivated: true }, 'username phone images rank rates worker location email emailIsVerified']);
+    const user = await getAUserWhere([{ worker: true, _id, isActivated: true }, userFields.join(' ')]);
     res.status(200).json(user);
   }
   catch (err) {
@@ -110,7 +112,7 @@ router.get('/:id/verify', async (req, res) => {
 router.get('/clients/:id', async (req, res) => {
   const { params: { id: _id } } = req;
   try {
-    const user = await getAUserWhere([{ worker: false, _id }, 'username images worker location email emailIsVerified']);
+    const user = await getAUserWhere([{ worker: false, _id }, userFields.join(' ')]);
     res.status(200).json(user);
   }
   catch (err) {
@@ -127,8 +129,8 @@ router.get('/clients/:id', async (req, res) => {
 router.put('/', tokenParser, activator, async (req, res) => {
   try {
     const { body: profile, userId } = req;
-    const { worker, images, username, rates, location, phone, emailIsVerified } = await updateUserProfile(userId, profile);
-    res.status(200).json({ worker, images, username, rates, location, phone, emailIsVerified });
+    const { worker, images, username, rates, location, phone, emailIsVerified, orientation } = await updateUserProfile(userId, profile);
+    res.status(200).json({ worker, images, username, rates, location, phone, emailIsVerified, orientation });
   }
   catch (err) {
     logger.error(err);
