@@ -112,6 +112,19 @@ export const updateUserProfile = async (userId, profile) => {
   }
 };
 
+export const resetUserPassword = async (email, password) => {
+  try {
+    password = await bcrypt.hashSync(password, HASH);
+    const user = await UserModel.findOneAndUpdate({ email }, {
+      $set: { password }
+    }, { new: true });
+    return user.password === password;
+  }
+  catch (err) {
+    throw err;
+  }
+};
+
 export const verifyUserProfile = async (userId) => {
   try {
     const user = await UserModel.findOneAndUpdate({ _id: userId }, {

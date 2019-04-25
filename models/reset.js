@@ -8,7 +8,8 @@ const Schema = mongoose.Schema;
 
 const Reset = new Schema({
   email: String,
-  status: { type: Boolean, default: false },
+  isValid: { type: Boolean, default: false },
+  complete: { type: Boolean, default: false },
   date_created: { type: Date, default: Date.now },
 });
 

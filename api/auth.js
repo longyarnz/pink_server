@@ -6,13 +6,13 @@ import express from 'express';
 import 'babel-polyfill';
 import JWT from 'jsonwebtoken';
 import UUID from 'uuid';
-import { authenticateUser, createUser, checkIfUserExists, getAUserWhere } from '../service/userService';
 import validateInput from '../middleware/validateInput';
 import validateLoginInput from '../middleware/validateLoginInput';
 import tokenParser from '../middleware/tokenParser';
 import logger from '../middleware/logger';
 import sendMail from '../connection/mail';
 import ResetModel from '../models/reset';
+import { authenticateUser, createUser, checkIfUserExists, getAUserWhere, resetUserPassword } from '../service/userService';
 
 const router = express.Router();
 
@@ -125,22 +125,24 @@ router.post('/login', validateLoginInput, async (req, res) => {
         });
       }
 
-      else if (!userHasActivated) {
-        res.status(400).json({
-          id: user.id,
-          email: email,
-          message: 'User has not activated the account'
-        });
-      }
-
-      else {
+      else if (!user.isValid) {
         const message = {
-          text: 'Email and password does not match',
+          text: 'Email and password do not match.',
           token: false
         };
 
         res.status(200).json(message);
       }
+
+      else if (!userHasActivated) {
+        res.status(400).json({
+          id: user.id,
+          email: email,
+          message: 'User has not activated the account.'
+        });
+      }
+
+      else res.status(400).json('Network Error');
     }
   }
 
@@ -208,7 +210,7 @@ router.get('/reset/:id', async (req, res) => {
   const { params: { id } } = req;
 
   try {
-    let record = await ResetModel.findOne({ _id: id, status: false });
+    let record = await ResetModel.findOne({ _id: id, isValid: false });
     const failed = (text = '') => {
       res.status(400).send(`
         <div style="width: 100%; height: 95vh; display: flex; justify-content: center; align-items: center; font-family: monospace; font-weight: bolder; font-size: 200%">
@@ -217,15 +219,15 @@ router.get('/reset/:id', async (req, res) => {
       `);
     };
 
-    if (!record) failed();
+    if (!record) failed(': USER DID NOT REQUEST PASSWORD CHANGE');
 
     else {
       const timeHasElapsed = (Date.now() - Date.parse(record.date_created)) / (1000 * 60 * 60) > 1;
       if (timeHasElapsed) failed(': 1 HOUR TIME FRAMED ELAPSED');
 
       else {
-        record = await ResetModel.findOneAndUpdate({ _id: id }, { status: true }, { new: true });
-        if (record.status) {
+        record = await ResetModel.findOneAndUpdate({ _id: id }, { isValid: true }, { new: true });
+        if (record.isValid) {
           res.status(200).send(`
             <div style="width: 100%; height: 95vh; display: flex; justify-content: center; align-items: center; font-family: monospace; font-weight: bolder; font-size: 200%; flex-direction: column">
               <span>YOUR PASSWORD HAS BEEN RESET.</span>
@@ -241,6 +243,38 @@ router.get('/reset/:id', async (req, res) => {
         }
         else failed();
       }
+    }
+  }
+
+  catch (err) {
+    logger.error(err);
+    res.status(400).json(err);
+  }
+});
+
+/**
+ * @description Logs a user into the Server
+ * @param {string} route An API route to login
+ * @param {middleware} validateInput - Callback for post method to routes
+ * @returns {Response} JSON
+ */
+router.post('/reset/:id', async (req, res) => {
+  const { params: { id }, body: { password } } = req;
+
+  try {
+    let record = await ResetModel.findOne({ _id: id, isValid: true, complete: false });
+    const failed = text => {
+      logger.error(text || 'The user did not initiate password reset');
+      res.status(400).json('Password Reset Failed');
+    };
+
+    if (!record) failed();
+
+    else {
+      const updateStatus = await resetUserPassword(record.email, password);
+      record = updateStatus && await ResetModel.findOneAndUpdate({ _id: id }, { complete: true }, { new: true });
+      if (updateStatus && record.complete) res.status(200).json('Password has been reset');
+      else failed('Password update failed');
     }
   }
 
